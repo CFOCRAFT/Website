@@ -5868,3 +5868,8 @@ body.tool-page .report-open:active { transform: translateY(0); }
   body.tool-page .lead-download-trigger,
   body.tool-page .report-open { transition: none; }
 }
+
+/* Free-report returning/new-user email step */
+#report-email-form[hidden]{display:none!important}
+#report-email-form .report-otp-label{align-items:stretch}
+#report-email-form .report-otp-label input{max-width:none;text-align:left;letter-spacing:normal;font-size:1rem;font-weight:400;margin:5px 0 14px}

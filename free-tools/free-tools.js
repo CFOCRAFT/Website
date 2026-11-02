@@ -1224,8 +1224,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const backdrop=document.createElement('div');backdrop.className='report-backdrop';backdrop.hidden=true;
     backdrop.innerHTML=`<div class="report-modal" role="dialog" aria-modal="true" aria-labelledby="report-modal-title" tabindex="-1">
       <button type="button" class="report-close" aria-label="Close">×</button>
-      <div class="report-head"><p class="report-eyebrow">CFO CRAFT · FREE REPORT</p><h2 id="report-modal-title">Get your personalised PDF report</h2><p>Share your details, then verify the one-time code sent to your work email.</p></div>
-      <form id="report-form" novalidate>
+      <div class="report-head"><p class="report-eyebrow">CFO CRAFT · FREE REPORT</p><h2 id="report-modal-title">Get your personalised PDF report</h2><p>Enter your email to continue. New visitors register once; verified visitors can download again from a trusted browser.</p></div>
+      <form id="report-email-form" novalidate>
+        <label class="report-otp-label">Email address <input type="email" name="email" autocomplete="email" maxlength="180" required placeholder="name@company.com"></label>
+        <p class="report-error" role="alert" aria-live="polite" hidden></p>
+        <button class="report-primary" type="submit">Continue →</button>
+      </form>
+      <form id="report-form" hidden novalidate>
       <div class="report-fields">
         <label><span class="report-field-title">Full name <b>*</b></span><input name="name" required maxlength="100" autocomplete="name" placeholder="Your full name"></label>
         <label><span class="report-field-title">Company / business <b>*</b></span><input name="company" required maxlength="120" autocomplete="organization" placeholder="Company name"></label>
@@ -1237,7 +1242,7 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
       <label class="report-check"><input name="privacyConsent" type="checkbox" required> <span>I agree to use my email for OTP verification and to process my details to issue this PDF. <strong>*</strong></span></label>
       <label class="report-check"><input name="followupConsent" type="checkbox"> <span>CFO CRAFT may contact me about advisory services. (Optional)</span></label>
-      <p class="report-privacy">We use your details to verify your email and issue the PDF. Verified contact and report access may be recorded for security and audit purposes. Financial inputs are used to prepare the PDF and are not saved as lead data. Advisory follow-up is optional.</p>
+      <p class="report-privacy">We verify your email once for your trusted browser session and record each PDF download request for security and audit purposes. Financial inputs are used to prepare the PDF and are not saved as lead data. Advisory follow-up is optional.</p>
       <p class="report-error" role="alert" aria-live="polite" hidden></p>
       <button class="report-primary" type="submit">Send email verification code →</button>
       </form>
@@ -1249,10 +1254,11 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="report-otp-actions"><button type="button" class="report-resend">Resend code</button><button type="button" class="report-edit">Edit email / details</button></div>
       </form></div>`;
     document.body.append(backdrop);
-    const contactForm=backdrop.querySelector('#report-form'), otpForm=backdrop.querySelector('#report-otp-form');
+    const contactForm=backdrop.querySelector('#report-form'), otpForm=backdrop.querySelector('#report-otp-form'), emailForm=backdrop.querySelector('#report-email-form');
+    const emailErr=emailForm.querySelector('.report-error');
     const generalErr=backdrop.querySelector('#report-form .report-error'),otpErr=backdrop.querySelector('.report-otp-error');
     const openButton=card.querySelector('.report-open');
-    let lead=null, challengeId=null, downloadToken=null, pending=false;
+    let lead=null, challengeId=null, downloadToken=null, pending=false, returning=false, currentEmail='';
     function error(node,message){node.textContent=message;node.hidden=!message;}
     function toggleBusy(el,busy,label){el.disabled=busy;el.textContent=label;}
     function close(){if(pending)return;backdrop.hidden=true;document.body.classList.remove('report-modal-open');openButton.focus();}
@@ -1262,26 +1268,62 @@ document.addEventListener("DOMContentLoaded", () => {
         if(problem) problem.scrollIntoView({block:'center',behavior:'smooth'});
         return;
       }
-      backdrop.hidden=false;document.body.classList.add('report-modal-open');error(generalErr,'');error(otpErr,'');contactForm.querySelector('[name=name]').focus();
+      backdrop.hidden=false;document.body.classList.add('report-modal-open');emailForm.hidden=false;contactForm.hidden=true;otpForm.hidden=true;error(emailErr,'');error(generalErr,'');error(otpErr,'');emailForm.elements.namedItem('email').focus();
     }
     openButton.addEventListener('click',open);
     backdrop.querySelector('.report-close').addEventListener('click',close);
     backdrop.addEventListener('click',e=>{if(e.target===backdrop)close();});
     document.addEventListener('keydown',e=>{if(backdrop.hidden)return;if(e.key==='Escape')close(); if(e.key==='Tab'){const focusable=[...backdrop.querySelectorAll('button,input,select')].filter(el=>!el.disabled && el.offsetParent!==null);if(focusable.length){const first=focusable[0],last=focusable.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}}});
     async function jsonRequest(path,payload){
-      const r=await fetch(api+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),mode:'cors',cache:'no-store'});
+      const r=await fetch(api+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),mode:'cors',cache:'no-store',credentials:'include'});
       let obj={};try{obj=await r.json();}catch(_){}
       if(!r.ok)throw new Error(obj.error || (r.status===429?'Too many attempts; please try later.':'Verification service unavailable. Please try again.'));
       return obj;
     }
     async function sendCode(){
-      const reply=await jsonRequest('/start',{...lead,tool,page:location.pathname});
+      const reply=await jsonRequest(returning?'/returning/start':'/start',returning?{email:currentEmail,tool,page:location.pathname}:{...lead,tool,page:location.pathname});
       challengeId=reply.challengeId;downloadToken=null;
       if(!challengeId)throw new Error('The server did not issue a verification request.');
       contactForm.hidden=true;otpForm.hidden=false;
-      backdrop.querySelector('.report-email-display').textContent=lead.email;
+      backdrop.querySelector('.report-email-display').textContent=currentEmail;
       backdrop.querySelector('#report-otp').value='';backdrop.querySelector('#report-otp').focus();
     }
+    async function fetchPDF(sessionMode=false){
+      const data=snapshot();
+      const response=await fetch(api+(sessionMode?'/session/download':'/download'),{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(sessionMode?{report:data}:{downloadToken,report:data}),
+        mode:'cors',cache:'no-store',credentials:'include'
+      });
+      if(!response.ok){let payload={};try{payload=await response.json();}catch(_){}
+        throw new Error(payload.error || 'Could not generate your PDF. Please retry.');}
+      const blob=await response.blob();
+      if(!blob.type.includes('pdf'))throw new Error('The server did not return a PDF.');
+      const url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download=`CFOCRAFT_${tool}_${new Date().toISOString().slice(0,10)}.pdf`;
+      document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),45000);
+    }
+    emailForm.addEventListener('submit',async e=>{
+      e.preventDefault();if(pending)return;
+      error(emailErr,'');currentEmail=String(emailForm.elements.namedItem('email').value||'').trim().toLowerCase();
+      if(!/^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/.test(currentEmail)){
+        error(emailErr,'Enter a valid email address.');return;
+      }
+      const btn=emailForm.querySelector('[type=submit]');pending=true;toggleBusy(btn,true,'Checking…');
+      try{
+        const result=await jsonRequest('/check-email',{email:currentEmail});
+        returning=Boolean(result.registered);
+        if(!returning){
+          contactForm.elements.namedItem('email').value=currentEmail;
+          emailForm.hidden=true;contactForm.hidden=false;contactForm.elements.namedItem('name').focus();
+        }else if(result.trusted){
+          await fetchPDF(true);pending=false;close();
+        }else{
+          await sendCode();emailForm.hidden=true;
+        }
+      }catch(err){error(emailErr,err.message||'Unable to continue.');}
+      finally{pending=false;toggleBusy(btn,false,'Continue →');}
+    });
     const contactNames = ['name','company','email','phone','city','industry','interest','privacyConsent'];
     const getField = name => contactForm.elements.namedItem(name);
     function normalisePhone(raw) {
@@ -1351,26 +1393,23 @@ document.addEventListener("DOMContentLoaded", () => {
       try{snapshot();}catch(err){error(generalErr,err.message);return;}
       const fd=new FormData(contactForm);
       lead={name:String(fd.get('name')).trim().replace(/\s+/g,' '),company:String(fd.get('company')).trim(),email:String(fd.get('email')).trim().toLowerCase(),phone:normalisePhone(fd.get('phone')),city:String(fd.get('city')||'').trim(),industry:String(fd.get('industry')||''),interest:String(fd.get('interest')||''),privacyConsent:fd.get('privacyConsent')==='on',followupConsent:fd.get('followupConsent')==='on'};
+      currentEmail=lead.email;returning=false;
       const btn=contactForm.querySelector('[type=submit]');pending=true;toggleBusy(btn,true,'Sending code…');
       try{await sendCode();}catch(err){error(generalErr,err.message || 'Unable to send code.');}
       finally{pending=false;toggleBusy(btn,false,'Send email verification code →');}
     });
     const codeInput=backdrop.querySelector('#report-otp');
     codeInput.addEventListener('input',()=>{codeInput.value=codeInput.value.replace(/\D/g,'').slice(0,6);if(/^\d{6}$/.test(codeInput.value))error(otpErr,'');});
-    backdrop.querySelector('.report-edit').addEventListener('click',()=>{otpForm.hidden=true;contactForm.hidden=false;challengeId=null;downloadToken=null;error(otpErr,'');});
-    backdrop.querySelector('.report-resend').addEventListener('click',async e=>{if(!lead||pending)return;pending=true;toggleBusy(e.currentTarget,true,'Sending…');error(otpErr,'');try{await sendCode();}catch(err){error(otpErr,err.message);}finally{pending=false;toggleBusy(e.currentTarget,false,'Resend code');}});
+    backdrop.querySelector('.report-edit').addEventListener('click',()=>{otpForm.hidden=true;emailForm.hidden=false;contactForm.hidden=true;challengeId=null;downloadToken=null;error(otpErr,'');});
+    backdrop.querySelector('.report-resend').addEventListener('click',async e=>{if(!currentEmail||pending)return;pending=true;toggleBusy(e.currentTarget,true,'Sending…');error(otpErr,'');try{await sendCode();}catch(err){error(otpErr,err.message);}finally{pending=false;toggleBusy(e.currentTarget,false,'Resend code');}});
     otpForm.addEventListener('submit',async e=>{
       e.preventDefault();error(otpErr,'');const code=backdrop.querySelector('#report-otp').value.trim();
       if(!/^\d{6}$/.test(code)){error(otpErr,'Enter the 6-digit code from your email.');return;}
       const btn=otpForm.querySelector('[type=submit]');pending=true;toggleBusy(btn,true,'Verifying & preparing PDF…');
       try{
         if(!downloadToken){const verified=await jsonRequest('/verify',{challengeId,code});downloadToken=verified.downloadToken; if(!downloadToken)throw new Error('Verification succeeded but report token was missing.');}
-        const data=snapshot(); // always capture latest calculated values
-        const response=await fetch(api+'/download',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({downloadToken,report:data}),mode:'cors',cache:'no-store'});
-        if(!response.ok){let payload={};try{payload=await response.json();}catch(_){ }throw new Error(payload.error||'Could not generate your PDF. Please retry.');}
-        const blob=await response.blob();if(!blob.type.includes('pdf'))throw new Error('The server did not return a PDF.');
-        const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`CFOCRAFT_${tool}_${new Date().toISOString().slice(0,10)}.pdf`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),45000);
-        downloadToken=null;challengeId=null;lead=null;contactForm.reset();otpForm.reset();contactNames.forEach(name=>{const field=getField(name);if(field)field.dataset.touched='';paintContact(name,'');});otpForm.hidden=true;contactForm.hidden=false;
+        await fetchPDF(false);
+        downloadToken=null;challengeId=null;lead=null;contactForm.reset();otpForm.reset();contactNames.forEach(name=>{const field=getField(name);if(field)field.dataset.touched='';paintContact(name,'');});otpForm.hidden=true;contactForm.hidden=true;emailForm.hidden=false;
         pending=false;close();
       }catch(err){error(otpErr,err.message||'Unable to download.');}finally{pending=false;toggleBusy(btn,false,'Verify & Download PDF →');}
     });

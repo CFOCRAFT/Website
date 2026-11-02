@@ -137,10 +137,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const howJourney = howSection?.querySelector("[data-how-journey]");
   const howProgressPath = howSection?.querySelector("[data-how-progress-path]");
   const howTraveller = howSection?.querySelector("[data-how-traveller]");
-  const howNodes = howSection ? [...howSection.querySelectorAll("[data-node-index]")] : [];
-  const howCards = howSection ? [...howSection.querySelectorAll("[data-step-index]")] : [];
+  const howNodes = howSection
+    ? [...howSection.querySelectorAll("[data-node-index]")]
+    : [];
+  const howCards = howSection
+    ? [...howSection.querySelectorAll("[data-step-index]")]
+    : [];
 
-  if (howSection && howJourney && howProgressPath && howNodes.length && howCards.length) {
+  if (
+    howSection &&
+    howJourney &&
+    howProgressPath &&
+    howNodes.length &&
+    howCards.length
+  ) {
     let howRaf = 0;
     const pathLength = howProgressPath.getTotalLength
       ? howProgressPath.getTotalLength()
@@ -179,8 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       howJourney.style.setProperty("--how-progress", progress.toFixed(4));
-      howProgressPath.style.strokeDashoffset =
-        `${(pathLength * (1 - progress)).toFixed(2)}`;
+      howProgressPath.style.strokeDashoffset = `${(pathLength * (1 - progress)).toFixed(2)}`;
 
       if (howTraveller && howProgressPath.getPointAtLength) {
         const point = howProgressPath.getPointAtLength(pathLength * progress);
@@ -212,17 +221,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ===== CASE STUDIES — 9-STEP PREMIUM PINNED SHOWCASE =====
   (() => {
-    const section = document.querySelector('[data-csx-scroll]');
+    const section = document.querySelector("[data-csx-scroll]");
     if (!section) return;
-    const steps = [...section.querySelectorAll('[data-csx-index]')];
-    const panels = [...section.querySelectorAll('[data-csx-panel]')];
-    const dots = [...section.querySelectorAll('[data-csx-dot]')];
-    const counter = section.querySelector('[data-csx-counter]');
-    const prev = section.querySelector('[data-csx-prev]');
-    const next = section.querySelector('[data-csx-next]');
-    const pinned = section.querySelector('.csx-sticky');
-    const isDesktop = () => window.matchMedia('(min-width:769px)').matches;
-    let active = -1, raf = 0;
+    const steps = [...section.querySelectorAll("[data-csx-index]")];
+    const panels = [...section.querySelectorAll("[data-csx-panel]")];
+    const dots = [...section.querySelectorAll("[data-csx-dot]")];
+    const counter = section.querySelector("[data-csx-counter]");
+    const prev = section.querySelector("[data-csx-prev]");
+    const next = section.querySelector("[data-csx-next]");
+    const pinned = section.querySelector(".csx-sticky");
+    const isDesktop = () => window.matchMedia("(min-width:769px)").matches;
+    let active = -1,
+      raf = 0;
     const clamp = (n) => Math.max(0, Math.min(panels.length - 1, n));
     const display = (index) => {
       const value = clamp(index);
@@ -230,38 +240,60 @@ document.addEventListener("DOMContentLoaded", () => {
       active = value;
       panels.forEach((p, i) => {
         const current = i === value;
-        p.classList.toggle('is-current', current);
-        p.setAttribute('aria-hidden', current ? 'false' : 'true');
+        p.classList.toggle("is-current", current);
+        p.setAttribute("aria-hidden", current ? "false" : "true");
       });
       steps.forEach((s, i) => {
-        s.classList.toggle('is-current', i === value);
-        s.classList.toggle('is-complete', i < value);
-        s.setAttribute('aria-current', i === value ? 'step' : 'false');
+        s.classList.toggle("is-current", i === value);
+        s.classList.toggle("is-complete", i < value);
+        s.setAttribute("aria-current", i === value ? "step" : "false");
       });
       dots.forEach((d, i) => {
-        d.classList.toggle('is-current', i === value);
-        d.classList.toggle('is-complete', i < value);
-        d.setAttribute('aria-current', i === value ? 'step' : 'false');
+        d.classList.toggle("is-current", i === value);
+        d.classList.toggle("is-complete", i < value);
+        d.setAttribute("aria-current", i === value ? "step" : "false");
       });
-      if (counter) counter.textContent = `${String(value + 1).padStart(2, '0')} / ${String(panels.length).padStart(2, '0')}`;
+      if (counter)
+        counter.textContent = `${String(value + 1).padStart(2, "0")} / ${String(panels.length).padStart(2, "0")}`;
       const step = steps[value];
-      if (step && !isDesktop()) step.scrollIntoView({ inline:'nearest', block:'nearest', behavior:'smooth' });
+      if (step && !isDesktop())
+        step.scrollIntoView({
+          inline: "nearest",
+          block: "nearest",
+          behavior: "smooth",
+        });
     };
     const size = () => {
       // Preserve normal page scroll outside the story. 9 equal intervals, one pinned viewport.
-      section.style.height = isDesktop() ? `${(panels.length + 1) * 100}svh` : '';
+      section.style.height = isDesktop()
+        ? `${(panels.length + 1) * 100}svh`
+        : "";
     };
     const sync = () => {
       raf = 0;
       if (!isDesktop()) return;
       const rect = section.getBoundingClientRect();
-      const height = Math.max(1, section.offsetHeight - (window.innerHeight || 1));
+      const height = Math.max(
+        1,
+        section.offsetHeight - (window.innerHeight || 1),
+      );
       const travelled = Math.max(0, Math.min(height, -rect.top));
-      const rail = section.querySelector('.csx-steps');
-      if (rail) rail.style.setProperty('--csx-rail-progress', `${(travelled / height * 100).toFixed(2)}%`);
-      display(Math.min(panels.length - 1, Math.floor(travelled / height * panels.length)));
+      const rail = section.querySelector(".csx-steps");
+      if (rail)
+        rail.style.setProperty(
+          "--csx-rail-progress",
+          `${((travelled / height) * 100).toFixed(2)}%`,
+        );
+      display(
+        Math.min(
+          panels.length - 1,
+          Math.floor((travelled / height) * panels.length),
+        ),
+      );
     };
-    const request = () => { if (!raf) raf = requestAnimationFrame(sync); };
+    const request = () => {
+      if (!raf) raf = requestAnimationFrame(sync);
+    };
     const navigate = (index) => {
       const target = clamp(index);
       display(target);
@@ -270,47 +302,83 @@ document.addEventListener("DOMContentLoaded", () => {
         const top = section.getBoundingClientRect().top + window.scrollY;
         // Navigate to interval center, avoiding snap-back on the next scroll tick.
         const position = (target + 0.32) / panels.length;
-        window.scrollTo({ top:top + range * position, behavior:'smooth' });
+        window.scrollTo({ top: top + range * position, behavior: "smooth" });
       }
     };
-    steps.forEach((step, i) => step.addEventListener('click', () => navigate(i)));
-    dots.forEach((dot, i) => dot.addEventListener('click', () => navigate(i)));
-    prev?.addEventListener('click', () => navigate(active - 1));
-    next?.addEventListener('click', () => navigate(active + 1));
-    window.addEventListener('scroll', request, {passive:true});
-    window.addEventListener('resize', () => { size();request(); }, {passive:true});
-    if (pinned) pinned.addEventListener('keydown', e => {
-      if (e.key === 'ArrowRight') { e.preventDefault();navigate(active+1); }
-      if (e.key === 'ArrowLeft') { e.preventDefault();navigate(active-1); }
-    });
+    steps.forEach((step, i) =>
+      step.addEventListener("click", () => navigate(i)),
+    );
+    dots.forEach((dot, i) => dot.addEventListener("click", () => navigate(i)));
+    prev?.addEventListener("click", () => navigate(active - 1));
+    next?.addEventListener("click", () => navigate(active + 1));
+    window.addEventListener("scroll", request, { passive: true });
+    window.addEventListener(
+      "resize",
+      () => {
+        size();
+        request();
+      },
+      { passive: true },
+    );
+    if (pinned)
+      pinned.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight") {
+          e.preventDefault();
+          navigate(active + 1);
+        }
+        if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          navigate(active - 1);
+        }
+      });
     // Mobile swipe over the illustration or copy.
     let touchX = null;
-    section.addEventListener('touchstart', e => { if (!isDesktop() && e.touches.length === 1 && e.target.closest('.csx-panels')) touchX=e.touches[0].clientX; }, {passive:true});
-    section.addEventListener('touchend', e => {
-      if (touchX === null || isDesktop()) return;
-      const diff=e.changedTouches[0].clientX-touchX;
-      touchX=null;
-      if (Math.abs(diff)>55) navigate(active + (diff<0?1:-1));
-    }, {passive:true});
-    size();display(0);sync();
+    section.addEventListener(
+      "touchstart",
+      (e) => {
+        if (
+          !isDesktop() &&
+          e.touches.length === 1 &&
+          e.target.closest(".csx-panels")
+        )
+          touchX = e.touches[0].clientX;
+      },
+      { passive: true },
+    );
+    section.addEventListener(
+      "touchend",
+      (e) => {
+        if (touchX === null || isDesktop()) return;
+        const diff = e.changedTouches[0].clientX - touchX;
+        touchX = null;
+        if (Math.abs(diff) > 55) navigate(active + (diff < 0 ? 1 : -1));
+      },
+      { passive: true },
+    );
+    size();
+    display(0);
+    sync();
     // Trigger the first entry when the pinned viewport actually appears, not on page reload.
     // Re-entering from either direction also replays the entrance choreography.
-    if ('IntersectionObserver' in window) {
-      const entry = new IntersectionObserver((entries) => {
-        entries.forEach((item) => {
-          if (item.isIntersecting) {
-            section.classList.remove('csx-animate');
-            requestAnimationFrame(() => {
-              if (item.isIntersecting) section.classList.add('csx-animate');
-            });
-          } else {
-            section.classList.remove('csx-animate');
-          }
-        });
-      }, { threshold: 0.12 });
+    if ("IntersectionObserver" in window) {
+      const entry = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((item) => {
+            if (item.isIntersecting) {
+              section.classList.remove("csx-animate");
+              requestAnimationFrame(() => {
+                if (item.isIntersecting) section.classList.add("csx-animate");
+              });
+            } else {
+              section.classList.remove("csx-animate");
+            }
+          });
+        },
+        { threshold: 0.12 },
+      );
       entry.observe(pinned || section);
     } else {
-      section.classList.add('csx-animate');
+      section.classList.add("csx-animate");
     }
   })();
 
@@ -372,9 +440,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let lastPaint = 0;
 
     const ease = (p) =>
-      p < 0.5
-        ? 4 * p * p * p
-        : 1 - Math.pow(-2 * p + 2, 3) / 2;
+      p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
 
     const progressAt = (elapsed) => {
       const x = elapsed % CYCLE;
@@ -406,8 +472,7 @@ document.addEventListener("DOMContentLoaded", () => {
       numberStates.forEach((state) => {
         const scaled = state.target * p;
         const sign = scaled < 0 ? "−" : "";
-        state.el.textContent =
-          `${state.prefix}${sign}${formatValue(scaled, state.decimals)}${state.suffix}`;
+        state.el.textContent = `${state.prefix}${sign}${formatValue(scaled, state.decimals)}${state.suffix}`;
       });
 
       verticalBars.forEach((bar, index) => {
@@ -426,7 +491,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const frame = (now) => {
       raf = 0;
       if (!visible) return;
-      if (now - lastPaint >= 40) { // cap non-essential dashboard counters at ~25 fps
+      if (now - lastPaint >= 40) {
+        // cap non-essential dashboard counters at ~25 fps
         lastPaint = now;
         render(progressAt(now - epoch));
       }
@@ -532,8 +598,6 @@ document.addEventListener("DOMContentLoaded", () => {
   requestDashboardFit();
   window.addEventListener("resize", requestDashboardFit, { passive: true });
   window.addEventListener("load", requestDashboardFit, { once: true });
-
-
 });
 
 /* ==========================================================================
@@ -4673,11 +4737,15 @@ function destr3nP5oFahNL86vESFrkKjmuupsQa1mPzN7(host) {
 }
 
 function initCfoCraftAnimatedDashboards() {
-  const allHosts = [...document.querySelectorAll('.feature-dashboard-embed[data-dashboard]')];
+  const allHosts = [
+    ...document.querySelectorAll(".feature-dashboard-embed[data-dashboard]"),
+  ];
   if (!allHosts.length) return;
 
-  const storyRoots = [...document.querySelectorAll('[data-cfo-story]')];
-  const standaloneHosts = allHosts.filter(h => !h.closest('[data-cfo-story]'));
+  const storyRoots = [...document.querySelectorAll("[data-cfo-story]")];
+  const standaloneHosts = allHosts.filter(
+    (h) => !h.closest("[data-cfo-story]"),
+  );
   const activeRoots = new Set();
   let visibilityRaf = 0;
 
@@ -4686,8 +4754,10 @@ function initCfoCraftAnimatedDashboards() {
     visibilityRaf = 0;
     for (const story of storyRoots) {
       // Stacked mobile/tablet panels are lazy-mounted by their own visibility observer.
-      if (!story.classList.contains('story-enhanced')) continue;
-      const hosts = [...story.querySelectorAll('.cfo-story-panel .feature-dashboard-embed')];
+      if (!story.classList.contains("story-enhanced")) continue;
+      const hosts = [
+        ...story.querySelectorAll(".cfo-story-panel .feature-dashboard-embed"),
+      ];
       const idx = Number(story.dataset.storyActive || 0);
       const nearViewport = activeRoots.has(story) && !document.hidden;
       hosts.forEach((host, i) => {
@@ -4700,39 +4770,49 @@ function initCfoCraftAnimatedDashboards() {
     }
   }
   function queueRefresh() {
-    if (!visibilityRaf) visibilityRaf = requestAnimationFrame(refreshStoryDashboards);
+    if (!visibilityRaf)
+      visibilityRaf = requestAnimationFrame(refreshStoryDashboards);
   }
 
-  if ('IntersectionObserver' in window) {
-    const storyObserver = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) activeRoots.add(entry.target);
-        else activeRoots.delete(entry.target);
-      });
-      queueRefresh();
-    }, { rootMargin: '200px 0px 200px 0px', threshold: 0 });
-    storyRoots.forEach(story => storyObserver.observe(story));
+  if ("IntersectionObserver" in window) {
+    const storyObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) activeRoots.add(entry.target);
+          else activeRoots.delete(entry.target);
+        });
+        queueRefresh();
+      },
+      { rootMargin: "200px 0px 200px 0px", threshold: 0 },
+    );
+    storyRoots.forEach((story) => storyObserver.observe(story));
 
-    const normalObserver = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        const parentStory = entry.target.closest('[data-cfo-story]');
-        if (parentStory?.classList.contains('story-enhanced')) return;
-        if (entry.isIntersecting && !document.hidden) {
-          cr3nP5oFahNL86vESFrkKjmuupsQa1mPzN7(entry.target);
-        } else {
-          destr3nP5oFahNL86vESFrkKjmuupsQa1mPzN7(entry.target);
-        }
-      });
-    }, {rootMargin:'220px 0px 220px 0px', threshold:0.01});
-    allHosts.forEach(host => normalObserver.observe(host));
+    const normalObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const parentStory = entry.target.closest("[data-cfo-story]");
+          if (parentStory?.classList.contains("story-enhanced")) return;
+          if (entry.isIntersecting && !document.hidden) {
+            cr3nP5oFahNL86vESFrkKjmuupsQa1mPzN7(entry.target);
+          } else {
+            destr3nP5oFahNL86vESFrkKjmuupsQa1mPzN7(entry.target);
+          }
+        });
+      },
+      { rootMargin: "220px 0px 220px 0px", threshold: 0.01 },
+    );
+    allHosts.forEach((host) => normalObserver.observe(host));
   } else {
-    storyRoots.forEach(story => activeRoots.add(story));
-    standaloneHosts.forEach(host => cr3nP5oFahNL86vESFrkKjmuupsQa1mPzN7(host));
+    storyRoots.forEach((story) => activeRoots.add(story));
+    standaloneHosts.forEach((host) =>
+      cr3nP5oFahNL86vESFrkKjmuupsQa1mPzN7(host),
+    );
     queueRefresh();
   }
-  window.addEventListener('cfo:storychange', queueRefresh);
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) allHosts.forEach(destr3nP5oFahNL86vESFrkKjmuupsQa1mPzN7);
+  window.addEventListener("cfo:storychange", queueRefresh);
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden)
+      allHosts.forEach(destr3nP5oFahNL86vESFrkKjmuupsQa1mPzN7);
     else queueRefresh();
   });
 }
@@ -4746,7 +4826,6 @@ if (document.readyState === "loading") {
   initCfoCraftAnimatedDashboards();
 }
 
-
 /* ========================================================================
    CFO CRAFT — INDUSTRIES + SERVICES ONE-SCREEN SCROLL STORIES
    Only 2 pinned sections; 4 industry steps and 6 service steps.
@@ -4755,93 +4834,122 @@ if (document.readyState === "loading") {
    ======================================================================== */
 (function () {
   function initCfoScrollShowcases() {
-    const roots = [...document.querySelectorAll('[data-cfo-story]')];
+    const roots = [...document.querySelectorAll("[data-cfo-story]")];
     if (!roots.length) return;
-    const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const pinEnabled = () => !motionPreference.matches && window.innerWidth >= 300;
+    const motionPreference = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+    const pinEnabled = () =>
+      !motionPreference.matches && window.innerWidth >= 300;
     const navHeight = () => {
-      const cssValue = parseFloat(getComputedStyle(document.body).getPropertyValue('--home-nav-offset'));
-      const elementHeight = document.getElementById('navbar')?.getBoundingClientRect().height;
+      const cssValue = parseFloat(
+        getComputedStyle(document.body).getPropertyValue("--home-nav-offset"),
+      );
+      const elementHeight = document
+        .getElementById("navbar")
+        ?.getBoundingClientRect().height;
       return Number.isFinite(elementHeight) && elementHeight > 0
         ? Math.round(elementHeight)
-        : (Number.isFinite(cssValue) && cssValue > 0 ? cssValue : 76);
+        : Number.isFinite(cssValue) && cssValue > 0
+          ? cssValue
+          : 76;
     };
     let nav = navHeight();
     let ticking = false;
     let lastWidth = window.innerWidth;
     let lastHeight = window.innerHeight;
 
-    function setStep(story, index, force=false) {
+    function setStep(story, index, force = false) {
       const panels = story._cfoPanels || [];
       const buttons = story._cfoButtons || [];
       const step = Math.max(0, Math.min(panels.length - 1, index));
       const previous = Number(story.dataset.storyActive ?? -1);
       if (!force && previous === step) return;
       story.dataset.storyActive = String(step);
-      if (story.id === 'industries') story.style.setProperty('--industry-index', step);
-      if (story.id === 'services') story.style.setProperty('--service-index', step);
+      if (story.id === "industries")
+        story.style.setProperty("--industry-index", step);
+      if (story.id === "services")
+        story.style.setProperty("--service-index", step);
       panels.forEach((panel, i) => {
         const active = i === step;
-        panel.classList.toggle('is-active', active);
-        panel.setAttribute('aria-hidden', String(pinEnabled() && !active));
+        panel.classList.toggle("is-active", active);
+        panel.setAttribute("aria-hidden", String(pinEnabled() && !active));
         panel.inert = pinEnabled() && !active;
         // On an item change start the new copy from its top (short mobile screens).
         if (active && previous !== step) panel.scrollTop = 0;
       });
       buttons.forEach((button, i) => {
-        button.classList.toggle('is-active', i === step);
-        button.classList.toggle('is-complete', i < step);
-        button.setAttribute('aria-pressed', String(i === step));
-        button.setAttribute('aria-current', i === step ? 'step' : 'false');
+        button.classList.toggle("is-active", i === step);
+        button.classList.toggle("is-complete", i < step);
+        button.setAttribute("aria-pressed", String(i === step));
+        button.setAttribute("aria-current", i === step ? "step" : "false");
       });
-      const progress = story.querySelector('[data-story-current]');
+      const progress = story.querySelector("[data-story-current]");
       if (progress) {
-        const name = panels[step]?.dataset.storyLabel || panels[step]?.querySelector('.feature-title')?.textContent?.trim() || '';
-        progress.textContent = `${String(step+1).padStart(2,'0')} / ${String(panels.length).padStart(2,'0')} — ${name}`;
+        const name =
+          panels[step]?.dataset.storyLabel ||
+          panels[step]?.querySelector(".feature-title")?.textContent?.trim() ||
+          "";
+        progress.textContent = `${String(step + 1).padStart(2, "0")} / ${String(panels.length).padStart(2, "0")} — ${name}`;
       }
       // Re-arm the same entrance for every slide, including the initial slide.
       // The visual is ALWAYS visible in CSS unless this one active panel has
       // deliberately been marked for a short entrance animation.
       if (previous !== step || force) {
-        panels.forEach(panel => panel.classList.remove('cfo-reveal-run'));
+        panels.forEach((panel) => panel.classList.remove("cfo-reveal-run"));
         // Check the visible pinned canvas, not the multi-viewport scroll track.
         // The track intersects long before the user reaches its first slide.
-        const pin = story.querySelector('.cfo-story-pin') || story;
+        const pin = story.querySelector(".cfo-story-pin") || story;
         const rect = pin.getBoundingClientRect();
-        const inView = rect.top < window.innerHeight * .88 && rect.bottom > nav;
+        const inView =
+          rect.top < window.innerHeight * 0.88 && rect.bottom > nav;
         if (inView && !motionPreference.matches) {
           const target = panels[step];
           // Force a fresh animation timeline on revisit even when scrolling quickly.
           requestAnimationFrame(() => {
-            if (panels[step] === target && target.classList.contains('is-active')) {
-              target.classList.add('cfo-reveal-run');
+            if (
+              panels[step] === target &&
+              target.classList.contains("is-active")
+            ) {
+              target.classList.add("cfo-reveal-run");
             }
           });
         }
-        window.dispatchEvent(new CustomEvent('cfo:storychange', {detail:{story, index:step}}));
+        window.dispatchEvent(
+          new CustomEvent("cfo:storychange", {
+            detail: { story, index: step },
+          }),
+        );
       }
     }
 
     function measure() {
       nav = navHeight();
-      document.body.style.setProperty('--home-nav-offset', `${nav}px`);
+      document.body.style.setProperty("--home-nav-offset", `${nav}px`);
       for (const story of roots) {
         if (!pinEnabled()) {
-          story.classList.remove('story-enhanced');
-          story.style.removeProperty('--cfo-story-height');
-          story.style.removeProperty('--cfo-step-distance');
+          story.classList.remove("story-enhanced");
+          story.style.removeProperty("--cfo-story-height");
+          story.style.removeProperty("--cfo-step-distance");
           for (const panel of story._cfoPanels) {
             panel.inert = false;
-            panel.removeAttribute('aria-hidden');
+            panel.removeAttribute("aria-hidden");
           }
           continue;
         }
         const viewportHeight = Math.max(1, window.innerHeight - nav);
-        const stepDistance = Math.max(215, viewportHeight * (window.innerWidth <= 600 ? .72 : .80));
-        const totalHeight = viewportHeight + story._cfoPanels.length * stepDistance;
-        story.style.setProperty('--cfo-story-height', `${Math.round(totalHeight)}px`);
-        story.style.setProperty('--cfo-step-distance', `${stepDistance}px`);
-        story.classList.add('story-enhanced');
+        const stepDistance = Math.max(
+          215,
+          viewportHeight * (window.innerWidth <= 600 ? 0.72 : 0.8),
+        );
+        const totalHeight =
+          viewportHeight + story._cfoPanels.length * stepDistance;
+        story.style.setProperty(
+          "--cfo-story-height",
+          `${Math.round(totalHeight)}px`,
+        );
+        story.style.setProperty("--cfo-step-distance", `${stepDistance}px`);
+        story.classList.add("story-enhanced");
       }
     }
 
@@ -4852,8 +4960,12 @@ if (document.readyState === "loading") {
         const bounding = story.getBoundingClientRect();
         // The full pinned story consumes exactly N equal steps of scroll.
         const position = Math.max(0, nav - bounding.top);
-        const stepDistance = parseFloat(story.style.getPropertyValue('--cfo-step-distance')) || 1;
-        const step = Math.min(story._cfoPanels.length - 1, Math.floor(position / stepDistance + 1e-6));
+        const stepDistance =
+          parseFloat(story.style.getPropertyValue("--cfo-step-distance")) || 1;
+        const step = Math.min(
+          story._cfoPanels.length - 1,
+          Math.floor(position / stepDistance + 1e-6),
+        );
         setStep(story, step);
       }
     }
@@ -4863,35 +4975,46 @@ if (document.readyState === "loading") {
         requestAnimationFrame(selectFromScroll);
       }
     }
-    function scrollToStep(story, step, behavior='smooth') {
+    function scrollToStep(story, step, behavior = "smooth") {
       if (!pinEnabled()) {
-        story._cfoPanels[step]?.scrollIntoView({behavior, block:'start'});
+        story._cfoPanels[step]?.scrollIntoView({ behavior, block: "start" });
         return;
       }
       const start = story.getBoundingClientRect().top + window.scrollY - nav;
-      const distance = parseFloat(story.style.getPropertyValue('--cfo-step-distance')) || 1;
-      const destination = Math.max(0, start + (step + .12) * distance);
-      window.scrollTo({top:destination, behavior});
+      const distance =
+        parseFloat(story.style.getPropertyValue("--cfo-step-distance")) || 1;
+      const destination = Math.max(0, start + (step + 0.12) * distance);
+      window.scrollTo({ top: destination, behavior });
     }
     function honorHash() {
       const id = decodeURIComponent(window.location.hash.slice(1));
       if (!id) return;
       for (const story of roots) {
-        const index = story._cfoPanels.findIndex(p => p.id === id);
+        const index = story._cfoPanels.findIndex((p) => p.id === id);
         if (index >= 0) {
-          requestAnimationFrame(() => scrollToStep(story, index, 'instant'));
+          requestAnimationFrame(() => scrollToStep(story, index, "instant"));
           return;
         }
       }
     }
     for (const story of roots) {
-      story._cfoPanels = [...story.querySelectorAll('[data-story-step]')];
-      story._cfoButtons = [...story.querySelectorAll('[data-story-go]')];
-      story._cfoButtons.forEach(button => {
-        button.addEventListener('click', () => {
-          const index = Math.max(0, Math.min(story._cfoPanels.length-1, Number(button.dataset.storyGo)||0));
+      story._cfoPanels = [...story.querySelectorAll("[data-story-step]")];
+      story._cfoButtons = [...story.querySelectorAll("[data-story-go]")];
+      story._cfoButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const index = Math.max(
+            0,
+            Math.min(
+              story._cfoPanels.length - 1,
+              Number(button.dataset.storyGo) || 0,
+            ),
+          );
           setStep(story, index);
-          scrollToStep(story, index, motionPreference.matches ? 'instant' : 'smooth');
+          scrollToStep(
+            story,
+            index,
+            motionPreference.matches ? "instant" : "smooth",
+          );
         });
       });
     }
@@ -4900,54 +5023,77 @@ if (document.readyState === "loading") {
     selectFromScroll();
     // The observed element is the pinned viewport, but state belongs to its
     // parent story. Observe both directions; re-arm when it truly leaves.
-    if ('IntersectionObserver' in window) {
-      const pinStories = new Map(roots.map(story => [
-        story.querySelector('.cfo-story-pin') || story, story
-      ]));
-      const entryObserver = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          const story = pinStories.get(entry.target);
-          if (!story) return;
-          if (!entry.isIntersecting) {
-            story.dataset.cfoEntryStarted = 'no';
-            return;
-          }
-          if (motionPreference.matches || !pinEnabled() || story.dataset.cfoEntryStarted === 'yes') return;
-          story.dataset.cfoEntryStarted = 'yes';
-          // Synchronize with whichever slide is currently selected. This
-          // covers the first Manufacturing / Finance Diagnostic visit as well
-          // as re-entry from below without needing a slide change.
-          const index = Number(story.dataset.storyActive || 0);
-          const panel = story._cfoPanels[index];
-          if (!panel) return;
-          panel.classList.remove('cfo-reveal-run');
-          void panel.offsetWidth;
-          panel.classList.add('cfo-reveal-run');
-        });
-      }, { threshold: 0, rootMargin: `-${nav}px 0px -12% 0px` });
+    if ("IntersectionObserver" in window) {
+      const pinStories = new Map(
+        roots.map((story) => [
+          story.querySelector(".cfo-story-pin") || story,
+          story,
+        ]),
+      );
+      const entryObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const story = pinStories.get(entry.target);
+            if (!story) return;
+            if (!entry.isIntersecting) {
+              story.dataset.cfoEntryStarted = "no";
+              return;
+            }
+            if (
+              motionPreference.matches ||
+              !pinEnabled() ||
+              story.dataset.cfoEntryStarted === "yes"
+            )
+              return;
+            story.dataset.cfoEntryStarted = "yes";
+            // Synchronize with whichever slide is currently selected. This
+            // covers the first Manufacturing / Finance Diagnostic visit as well
+            // as re-entry from below without needing a slide change.
+            const index = Number(story.dataset.storyActive || 0);
+            const panel = story._cfoPanels[index];
+            if (!panel) return;
+            panel.classList.remove("cfo-reveal-run");
+            void panel.offsetWidth;
+            panel.classList.add("cfo-reveal-run");
+          });
+        },
+        { threshold: 0, rootMargin: `-${nav}px 0px -12% 0px` },
+      );
       pinStories.forEach((story, pin) => entryObserver.observe(pin));
     }
-    window.addEventListener('scroll', scheduleScroll, {passive:true});
-    window.addEventListener('resize', () => {
-      if (lastWidth===window.innerWidth && lastHeight===window.innerHeight) return;
-      lastWidth=window.innerWidth;
-      lastHeight=window.innerHeight;
+    window.addEventListener("scroll", scheduleScroll, { passive: true });
+    window.addEventListener(
+      "resize",
+      () => {
+        if (
+          lastWidth === window.innerWidth &&
+          lastHeight === window.innerHeight
+        )
+          return;
+        lastWidth = window.innerWidth;
+        lastHeight = window.innerHeight;
+        measure();
+        for (const story of roots)
+          setStep(story, Number(story.dataset.storyActive || 0), true);
+        scheduleScroll();
+      },
+      { passive: true },
+    );
+    motionPreference.addEventListener?.("change", () => {
       measure();
-      for (const story of roots) setStep(story, Number(story.dataset.storyActive||0),true);
-      scheduleScroll();
-    }, {passive:true});
-    motionPreference.addEventListener?.('change', () => {
-      measure();
-      for (const story of roots) setStep(story, Number(story.dataset.storyActive||0),true);
+      for (const story of roots)
+        setStep(story, Number(story.dataset.storyActive || 0), true);
       scheduleScroll();
     });
-    window.addEventListener('hashchange', honorHash);
+    window.addEventListener("hashchange", honorHash);
     if (window.location.hash) honorHash();
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initCfoScrollShowcases, {once:true});
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", initCfoScrollShowcases, {
+      once: true,
+    });
   else initCfoScrollShowcases();
 })();
-
 
 /* ========================================================================
    GET IN TOUCH — Fast, field-level validation & safe backend integration.
@@ -4970,9 +5116,15 @@ if (document.readyState === "loading") {
       phone: form.elements.namedItem("mobile"),
       company: form.elements.namedItem("company"),
       revenue: form.elements.namedItem("revenue"),
-      message: form.elements.namedItem("message")
+      message: form.elements.namedItem("message"),
     };
-    const revenueChoices = new Set(["Under ₹20 Cr", "₹20 - ₹50 Cr", "₹50 - ₹100 Cr", "₹100 - ₹200 Cr", "₹200 Cr+"]);
+    const revenueChoices = new Set([
+      "Under ₹20 Cr",
+      "₹20 - ₹50 Cr",
+      "₹50 - ₹100 Cr",
+      "₹100 - ₹200 Cr",
+      "₹200 Cr+",
+    ]);
     const errors = {};
     let sending = false;
 
@@ -4989,10 +5141,23 @@ if (document.readyState === "loading") {
       errors[key] = error;
     }
 
+    let contactMessageTimer = null;
+
     function notify(text, type = "") {
+      clearTimeout(contactMessageTimer);
+
       statusBox.textContent = text;
       statusBox.dataset.state = type;
       statusBox.hidden = !text;
+
+      if (text) {
+        contactMessageTimer = setTimeout(() => {
+          statusBox.textContent = "";
+          statusBox.dataset.state = "";
+          statusBox.hidden = true;
+          contactMessageTimer = null;
+        }, 5000);
+      }
     }
 
     function showError(key, message = "") {
@@ -5008,69 +5173,107 @@ if (document.readyState === "loading") {
     function payloadFromForm() {
       const data = new FormData(form);
       return {
-        name: String(data.get("name") || "").trim().replace(/\s+/g, " "),
-        email: String(data.get("email") || "").trim().toLowerCase(),
+        name: String(data.get("name") || "")
+          .trim()
+          .replace(/\s+/g, " "),
+        email: String(data.get("email") || "")
+          .trim()
+          .toLowerCase(),
         phone: String(data.get("mobile") || "").trim(),
-        company: String(data.get("company") || "").trim().replace(/\s+/g, " "),
+        company: String(data.get("company") || "")
+          .trim()
+          .replace(/\s+/g, " "),
         revenue: String(data.get("revenue") || "").trim(),
         message: String(data.get("message") || "").trim(),
         // Clicking submit with the visible disclosure is the user's affirmative request.
-        consent: true
+        consent: true,
       };
     }
 
     const checks = {
       name(p) {
         if (!p.name) return "Full name is required.";
-        if (p.name.length < 2 || p.name.length > 100 ||
-            !/^[\p{L}\p{M}][\p{L}\p{M} .\-'\u2019]*$/u.test(p.name) ||
-            (p.name.match(/\p{L}/gu) || []).length < 2)
+        if (
+          p.name.length < 2 ||
+          p.name.length > 100 ||
+          !/^[\p{L}\p{M}][\p{L}\p{M} .\-'\u2019]*$/u.test(p.name) ||
+          (p.name.match(/\p{L}/gu) || []).length < 2
+        )
           return "Enter a valid full name (at least two letters).";
         return "";
       },
       email(p) {
         if (!p.email) return "Business email is required.";
         const [local, domain, extra] = p.email.split("@");
-        if (extra !== undefined || !local || local.length > 64 || p.email.length > 254 ||
-            !/^[a-z0-9!#$%&'*+/=?^_`{|}~.-]+$/.test(local) ||
-            local.startsWith(".") || local.endsWith(".") || local.includes("..") ||
-            !/^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/.test(domain || ""))
+        if (
+          extra !== undefined ||
+          !local ||
+          local.length > 64 ||
+          p.email.length > 254 ||
+          !/^[a-z0-9!#$%&'*+/=?^_`{|}~.-]+$/.test(local) ||
+          local.startsWith(".") ||
+          local.endsWith(".") ||
+          local.includes("..") ||
+          !/^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/.test(
+            domain || "",
+          )
+        )
           return "Enter a valid email address, such as name@company.com.";
         return "";
       },
       phone(p) {
         if (!p.phone) return "Mobile number is required.";
-        if (p.phone.length > 40 || !/^[+\d() .-]+$/.test(p.phone) ||
-            (p.phone.match(/\+/g) || []).length > 1 || (p.phone.includes("+") && !p.phone.startsWith("+")))
+        if (
+          p.phone.length > 40 ||
+          !/^[+\d() .-]+$/.test(p.phone) ||
+          (p.phone.match(/\+/g) || []).length > 1 ||
+          (p.phone.includes("+") && !p.phone.startsWith("+"))
+        )
           return "Enter a valid mobile number.";
         const digits = p.phone.replace(/\D/g, "");
         const indian = /^(?:0|91)?[6-9]\d{9}$/.test(digits);
-        const international = p.phone.startsWith("+") && /^\+[1-9]\d{7,14}$/.test(`+${digits}`);
-        if (!indian && !international) return "Enter a 10-digit Indian mobile or a number with +country code.";
-        const local = digits.length === 10 ? digits : (digits.length === 11 ? digits.slice(1) : digits.slice(2));
+        const international =
+          p.phone.startsWith("+") && /^\+[1-9]\d{7,14}$/.test(`+${digits}`);
+        if (!indian && !international)
+          return "Enter a 10-digit Indian mobile or a number with +country code.";
+        const local =
+          digits.length === 10
+            ? digits
+            : digits.length === 11
+              ? digits.slice(1)
+              : digits.slice(2);
         const e164 = international ? `+${digits}` : `+91${local}`;
-        if ((e164.startsWith("+91") && !/^\+91[6-9]\d{9}$/.test(e164)) ||
-            (e164.startsWith("+61") && !/^\+61[23478]\d{8}$/.test(e164)) ||
-            (e164.startsWith("+1") && !/^\+1[2-9]\d{2}[2-9]\d{6}$/.test(e164)) ||
-            /^\+(\d)\1{7,14}$/.test(e164))
+        if (
+          (e164.startsWith("+91") && !/^\+91[6-9]\d{9}$/.test(e164)) ||
+          (e164.startsWith("+61") && !/^\+61[23478]\d{8}$/.test(e164)) ||
+          (e164.startsWith("+1") && !/^\+1[2-9]\d{2}[2-9]\d{6}$/.test(e164)) ||
+          /^\+(\d)\1{7,14}$/.test(e164)
+        )
           return "Enter a valid mobile number and country code.";
         return "";
       },
       company(p) {
         if (!p.company) return "";
-        if (p.company.length < 2 || p.company.length > 160 ||
-            !/[\p{L}\p{N}]/u.test(p.company) || /[<>]/.test(p.company))
+        if (
+          p.company.length < 2 ||
+          p.company.length > 160 ||
+          !/[\p{L}\p{N}]/u.test(p.company) ||
+          /[<>]/.test(p.company)
+        )
           return "Enter a valid company name, or leave it blank.";
         return "";
       },
       revenue(p) {
         if (!p.revenue) return "";
-        return revenueChoices.has(p.revenue) ? "" : "Select a valid revenue range.";
+        return revenueChoices.has(p.revenue)
+          ? ""
+          : "Select a valid revenue range.";
       },
       message(p) {
         return p.message.length > 1200 || /[<>]/.test(p.message)
-          ? "Use plain text with a maximum of 1,200 characters." : "";
-      }
+          ? "Use plain text with a maximum of 1,200 characters."
+          : "";
+      },
     };
 
     // Validate once the user leaves a field, then on edits only when it has an error.
@@ -5082,7 +5285,8 @@ if (document.readyState === "loading") {
         showError(key, checks[key](payloadFromForm()));
       });
       const onChange = () => {
-        if (errors[key] && !errors[key].hidden) showError(key, checks[key](payloadFromForm()));
+        if (errors[key] && !errors[key].hidden)
+          showError(key, checks[key](payloadFromForm()));
         if (statusBox.dataset.state === "error") notify("");
       };
       input.addEventListener("input", onChange);
@@ -5103,7 +5307,10 @@ if (document.readyState === "loading") {
       if (firstInvalid) {
         notify("Please correct the highlighted fields.", "error");
         fields[firstInvalid].focus({ preventScroll: true });
-        fields[firstInvalid].scrollIntoView({ behavior: "smooth", block: "center" });
+        fields[firstInvalid].scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
         return;
       }
 
@@ -5114,9 +5321,12 @@ if (document.readyState === "loading") {
       try {
         const response = await fetch(form.dataset.contactApi, {
           method: "POST",
-          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
           body: JSON.stringify(payload),
-          cache: "no-store"
+          cache: "no-store",
         });
         const result = await response.json().catch(() => ({}));
         if (!response.ok) {
@@ -5125,21 +5335,43 @@ if (document.readyState === "loading") {
             showError(key, result.message || "Please check this field.");
             fields[key].focus({ preventScroll: true });
           }
-          notify(result.message || (response.status === 429
-            ? "Too many requests. Please try again later."
-            : "We could not submit your enquiry. Please try again."), "error");
+          notify(
+            result.message ||
+              (response.status === 429
+                ? "Too many requests. Please try again later."
+                : "We could not submit your enquiry. Please try again."),
+            "error",
+          );
           return;
         }
-        if (response.status !== 201 || result.status !== "received") {
-          notify("The server returned an unexpected response. Please contact us directly.", "error");
+        if (result.status !== "received") {
+          notify(
+            "The server returned an unexpected response. Please contact us directly.",
+            "error",
+          );
           return;
         }
+
         form.reset();
-        for (const key of Object.keys(fields)) showError(key);
-        notify("Thank you! Your enquiry has been received. We will respond within one working day.", "success");
+
+        for (const key of Object.keys(fields)) {
+          showError(key);
+        }
+
+        if (result.duplicate === true) {
+          notify("Your enquiry has already been received.", "success");
+        } else {
+          notify(
+            "Thank you! Your enquiry has been received. We will respond within one working day.",
+            "success",
+          );
+        }
       } catch (error) {
         // Timeout or network error does not prove that no enquiry was saved.
-        notify("We couldn't confirm your submission. Please contact info@cfocraft.com if the problem continues.", "error");
+        notify(
+          "We couldn't confirm your submission. Please contact info@cfocraft.com if the problem continues.",
+          "error",
+        );
       } finally {
         sending = false;
         submit.disabled = false;
@@ -5148,6 +5380,7 @@ if (document.readyState === "loading") {
       }
     });
   };
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount, { once: true });
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", mount, { once: true });
   else mount();
 })();

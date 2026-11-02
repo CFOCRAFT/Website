@@ -1174,7 +1174,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   const tool = document.body.dataset.page;
   if (!TOOL_NAMES[tool]) return;
-  const api = String(window.CFO_FREE_REPORT_API || 'https://cfo-craft-backend.onrender.com/api/free-report').replace(/\/+$/,'');
+  const api = String(window.CFO_FREE_REPORT_API || 'https://api.cfocraft.com/api/free-report').replace(/\/+$/,'');
   const txt = el => (el?.textContent || '').replace(/\s+/g,' ').trim();
   const safe = s => String(s ?? '').slice(0,200);
   function snapshot(){

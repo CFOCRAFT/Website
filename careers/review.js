@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const BASE = 'https://cfo-craft-backend.onrender.com/api/careers/cv';
+  const BASE = 'https://api.cfocraft.com/api/careers/cv';
   const $ = (id) => document.getElementById(id);
   const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
   const requestForm = $('request-form');

@@ -1,7 +1,7 @@
 /* CFO CRAFT careers application frontend — live Render API connection. */
 (() => {
   'use strict';
-  const API_URL = 'https://cfo-craft-backend.onrender.com/api/careers/apply'; // Live CFO CRAFT Render backend.
+  const API_URL = 'https://api.cfocraft.com/api/careers/apply'; // Live CFO CRAFT Render backend.
   const MAX_BYTES = 5 * 1024 * 1024;
   const $ = (id) => document.getElementById(id);
   const catalog = Array.isArray(window.CFO_CAREER_ROLES) ? window.CFO_CAREER_ROLES : [];

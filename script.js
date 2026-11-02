@@ -5359,7 +5359,10 @@ if (document.readyState === "loading") {
         }
 
         if (result.duplicate === true) {
-          notify("Your enquiry has already been received.", "success");
+          notify(
+            "Your enquiry has already been received. Please avoid submitting the same enquiry again within 24 hours.",
+            "error",
+          );
         } else {
           notify(
             "Thank you! Your enquiry has been received. We will respond within one working day.",

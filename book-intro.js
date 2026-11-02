@@ -6,7 +6,7 @@
  */
 (()=>{'use strict';
   const $=(id)=>document.getElementById(id);
-  const CFG=Object.assign({availabilityEndpoint:'',bookingEndpoint:'',durationMinutes:30,businessEmail:'info@cfocraft.com'},window.CFO_BOOKING_CONFIG||{});
+  const CFG=Object.assign({availabilityEndpoint:'',bookingEndpoint:'',durationMinutes:45,businessEmail:'info@cfocraft.com'},window.CFO_BOOKING_CONFIG||{});
   const LIVE=Boolean(CFG.availabilityEndpoint && CFG.bookingEndpoint);
   const HALF_CONFIG=Boolean(CFG.availabilityEndpoint || CFG.bookingEndpoint)&&!LIVE;
   const HOST_TZ='Asia/Kolkata';
@@ -92,14 +92,11 @@
   // Stable date-dependent SAMPLE schedule. All times are in the host's time zone,
   // converted into actual UTC instants before display in the visitor's time zone.
   function demoSlotsForDay(key){
-    const n=Number(key.replaceAll('-',''));
-    const variants=[[[10,0],[11,30],[14,0]],[[10,30],[12,0],[15,30],[17,0]],[[11,0],[13,0],[14,30]],[[9,30],[12,30],[15,0],[16,30]],[[10,0],[13,30],[16,0]],[[11,30],[14,30],[17,30]]];
-    const weekday=dayWeek(key);
-    const picked=variants[(n+weekday)%variants.length];
-    return picked.map(([h,m])=>{
-      const start=new Date(`${key}T${p2(h)}:${p2(m)}:00+05:30`);
+    // Demo mode follows the same fixed start times as the live backend.
+    return [11,12,13,14,15,16,17].map(h=>{
+      const start=new Date(`${key}T${p2(h)}:00:00+05:30`);
       const end=new Date(start.getTime()+CFG.durationMinutes*60000);
-      return {start:start.toISOString(),end:end.toISOString(),id:`sample-${key}-${h}-${m}`,sample:true};
+      return {start:start.toISOString(),end:end.toISOString(),id:`sample-${key}-${h}`,sample:true};
     }).filter(s=>Date.parse(s.start)>Date.now()+60*60000);
   }
   function slotsMarkup(){
@@ -148,12 +145,12 @@
   }
   function goDetails(){if(!state.slot)return;
     $('summary-date').textContent=`${dateLabel(state.date)} · ${fullSlot(state.slot.start)}`;
-    $('summary-zone').textContent=`${zoneNice(state.zone)} (${zoneOffset(state.zone,new Date(state.slot.start))}) · 30-minute Google Meet`;
+    $('summary-zone').textContent=`${zoneNice(state.zone)} (${zoneOffset(state.zone,new Date(state.slot.start))}) · 45-minute Google Meet`;
     gotoStep(2);$('guest-name').focus({preventScroll:true});
   }
   function buildMailto(d){
     const subject=`Intro to CFO CRAFT — ${d.company}`;
-    const body=[`Hello Sudhir and CFO CRAFT,`,'',`I would like to request an introductory 30-minute call.`, '',`Preferred date (host India): ${d.date}`,`Preferred time (${d.timezone}): ${d.displayTime}`,`Proposed start: ${d.slotStart}`,'',`Name: ${d.name}`,`Email: ${d.email}`,`Company: ${d.company}`,`Phone: ${d.phone||'Not provided'}`,`Topic: ${d.topic}`,`Notes: ${d.message||'None'}`,'',`I understand this slot is not confirmed until CFO CRAFT replies.`, 'Thank you.'].join('\n');
+    const body=[`Hello Sudhir and CFO CRAFT,`,'',`I would like to request an introductory 45-minute call.`, '',`Preferred date (host India): ${d.date}`,`Preferred time (${d.timezone}): ${d.displayTime}`,`Proposed start: ${d.slotStart}`,'',`Name: ${d.name}`,`Email: ${d.email}`,`Company: ${d.company}`,`Phone: ${d.phone||'Not provided'}`,`Topic: ${d.topic}`,`Notes: ${d.message||'None'}`,'',`I understand this slot is not confirmed until CFO CRAFT replies.`, 'Thank you.'].join('\n');
     return `mailto:${encodeURIComponent(CFG.businessEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
   function showFinish(d,confirmed){

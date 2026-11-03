@@ -891,15 +891,15 @@
         <div class="resource-wrap">
           <div class="resource-hero-grid">
             <div class="resource-hero-copy">
-            <p class="resource-crumb">
-              <a href="/">Home</a> / Resources / Events &amp;
-              Webinars
-            </p>
-            <h1>Meet us in the room, or join online</h1>
-            <p class="resource-lede">
-              Roundtables in Mumbai for promoters, webinars on practical finance
-              topics, and briefings for the advisers who refer businesses to us.
-            </p>
+              <p class="resource-crumb">
+                <a href="/">Home</a> / Resources / Events &amp; Webinars
+              </p>
+              <h1>Meet us in the room, or join online</h1>
+              <p class="resource-lede">
+                Roundtables in Mumbai for promoters, webinars on practical
+                finance topics, and briefings for the advisers who refer
+                businesses to us.
+              </p>
             </div>
           </div>
         </div>
@@ -1199,8 +1199,7 @@
           day: "",
           mon: "",
           fmt: "Promoter roundtable",
-          title:
-            "Roundtable topic, Freeing cash tied up in debtors and stock",
+          title: "Roundtable topic, Freeing cash tied up in debtors and stock",
           where: "Mumbai",
           time: "Coming Soon",
           seats: "",
@@ -1237,20 +1236,39 @@
       // Match the existing site API base URL (used by Get in Touch).
       // Replace the hostname below if your existing backend is different.
       const EVENTS_API_BASE = "https://api.cfocraft.com";
+      let eventsMessageTimer = null;
+
+      function hideEventsMessageLater() {
+        clearTimeout(eventsMessageTimer);
+        eventsMessageTimer = setTimeout(() => {
+          el("err").hidden = true;
+          el("ok").hidden = true;
+        }, 5000);
+      }
       el("form").addEventListener("submit", async (ev) => {
         ev.preventDefault();
+        clearTimeout(eventsMessageTimer);
         const f = ev.currentTarget;
-        const err = el("err"), ok = el("ok");
+        const err = el("err"),
+          ok = el("ok");
         const button = f.querySelector('button[type="submit"]');
-        err.hidden = true; ok.hidden = true;
-        const missing = [...f.querySelectorAll("[required]")].filter(i =>
-          i.type === "checkbox" ? !i.checked : !i.value.trim() || (i.type === "email" && !i.checkValidity())
+        err.hidden = true;
+        ok.hidden = true;
+        const missing = [...f.querySelectorAll("[required]")].filter((i) =>
+          i.type === "checkbox"
+            ? !i.checked
+            : !i.value.trim() || (i.type === "email" && !i.checkValidity()),
         );
-        const interests = [...f.querySelectorAll('input[name="interest"]:checked')].map(i => i.value);
+        const interests = [
+          ...f.querySelectorAll('input[name="interest"]:checked'),
+        ].map((i) => i.value);
         if (missing.length || !interests.length) {
-          err.textContent = !interests.length && !missing.length ? "Select at least one event type." :
-            "Enter your name, company, role, valid email and tick the consent box.";
+          err.textContent =
+            !interests.length && !missing.length
+              ? "Select at least one event type."
+              : "Enter your name, company, role, valid email and tick the consent box.";
           err.hidden = false;
+          hideEventsMessageLater();
           (missing[0] || f.querySelector('input[name="interest"]')).focus();
           return;
         }
@@ -1258,19 +1276,43 @@
         const original = button.textContent;
         button.textContent = "Registering...";
         try {
-          const response = await fetch(EVENTS_API_BASE + "/api/events/interest", {
-            method: "POST", headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-              name: f.elements.name.value.trim(), company: f.elements.company.value.trim(),
-              role: f.elements.role.value, email: f.elements.email.value.trim(), interests,
-              consent: f.elements.consent.checked
-            })
-          });
+          const response = await fetch(
+            EVENTS_API_BASE + "/api/events/interest",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                name: f.elements.name.value.trim(),
+                company: f.elements.company.value.trim(),
+                role: f.elements.role.value,
+                email: f.elements.email.value.trim(),
+                interests,
+                consent: f.elements.consent.checked,
+              }),
+            },
+          );
           const data = await response.json().catch(() => ({}));
-          if (!response.ok) throw new Error(data.message || "Registration failed. Try again.");
-          f.reset(); ok.textContent = data.message || "Registered successfully."; ok.hidden = false;
-        } catch (e) {err.textContent = e.message || "Unable to submit. Please try again."; err.hidden = false;}
-        finally {button.disabled = false; button.textContent = original;}
+          if (!response.ok)
+            throw new Error(data.message || "Registration failed. Try again.");
+          f.reset();
+
+          if (data.duplicate === true) {
+            err.textContent = data.message;
+            err.hidden = false;
+            ok.hidden = true;
+          } else {
+            ok.textContent = data.message || "Registered successfully.";
+            ok.hidden = false;
+            err.hidden = true;
+          }
+        } catch (e) {
+          err.textContent = e.message || "Unable to submit. Please try again.";
+          err.hidden = false;
+        } finally {
+          button.disabled = false;
+          button.textContent = original;
+          hideEventsMessageLater();
+        }
       });
     </script>
     <script src="../script.js"></script>

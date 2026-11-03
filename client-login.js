@@ -293,6 +293,9 @@
 
         if (!response.ok) {
           if (response.status === 429) throw new Error('Too many attempts. Please wait before retrying.');
+          if (path === '/email/verify' && response.status === 401) {
+            throw new Error('Invalid or expired verification code.');
+          }
           if (response.status === 401 || response.status === 403) {
             throw new Error('Login not authorized. Please contact CFO CRAFT if you need access.');
           }

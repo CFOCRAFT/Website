@@ -50,7 +50,7 @@ body.resource-page {
 .resource-page .resource-sub { max-width:760px; color:var(--resource-muted); }
 .resource-page .resource-ph { display:inline; padding:1px 5px; border:1px dashed #c8954f; border-radius:4px; background:#fff6e9; color:#76501f; font-weight:600; }
 
-.resource-page .resource-btn { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:12px 18px; border:1px solid transparent; border-radius:999px; font:600 .92rem/1 var(--font-primary); text-decoration:none; cursor:pointer; transition:var(--transition); }
+.resource-page .resource-btn { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:12px 18px; border:1px solid transparent; border-radius:8px; font:600 .92rem/1 var(--font-primary); text-decoration:none; cursor:pointer; transition:var(--transition); }
 .resource-page .resource-btn-navy { background:var(--dark-blue); color:var(--white); }
 .resource-page .resource-btn-navy:hover { background:var(--primary-blue); }
 .resource-page .resource-btn-sky { background:var(--light-blue); color:var(--dark-blue); }
@@ -578,6 +578,35 @@ body.resource-page {
   background: rgba(161,42,42,.06);
 }
 
+/* Shared feedback look: matches Careers form; Events uses a single box for every response. */
+.resource-page .cc-form-feedback {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  margin: 22px 0 16px;
+  padding: 14px 17px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  font-size: .86rem;
+  font-weight: 400;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.resource-page .cc-form-feedback[hidden] { display: none !important; }
+.resource-page .cc-form-feedback.is-success {
+  background: #eef9f2;
+  border-color: #bfe7c9;
+  color: #1c6a3b;
+}
+.resource-page .cc-form-feedback.is-error {
+  background: #fff0f1;
+  border-color: #e7afb6;
+  border-left: 4px solid #bb404b;
+  color: #8b2734;
+  box-shadow: 0 6px 18px rgba(187, 64, 75, .055);
+}
+
+
 /* ---------- Empty states ---------- */
 .resource-page .event-empty,
 .resource-page .empty:not([hidden]) {
@@ -844,64 +873,11 @@ body.resource-page.case-studies-page .case-status {
   .resource-page .act a.download-link { width: 100%; }
 }
 
-
-/* CFO CRAFT standard CTA themes — Resources Hub request actions only.
-   Type 02: cream-filled redirect. Type 03: navy-outline redirect.
-   Other page elements, downloads and the final CTA stay unchanged. */
-body.resource-page .ask .ask-actions .resource-btn-navy {
-  background: var(--creamish, #eeba7d);
-  border-color: var(--creamish, #eeba7d);
-  color: #111;
-  box-shadow: none;
-}
-body.resource-page .ask .ask-actions .resource-btn-navy:hover {
-  background: #dca362;
-  border-color: #dca362;
-  color: #111;
-  transform: translateY(-2px);
-}
-body.resource-page .ask .ask-actions .resource-btn-line {
-  background: transparent;
-  border-color: #bfd7f6;
-  color: var(--dark-blue, #082951);
-  box-shadow: none;
-}
-body.resource-page .ask .ask-actions .resource-btn-line:hover {
-  background: #f0f6ff;
-  border-color: var(--primary-blue, #2b6db2);
-  color: var(--dark-blue, #082951);
-  transform: translateY(-2px);
-}
-body.resource-page .ask .ask-actions .resource-btn:focus-visible {
-  outline: 2px solid var(--primary-blue, #2b6db2);
-  outline-offset: 3px;
-}
-
-/* CFO CRAFT button system — Events page only.
-   Type 02 (primary action): cream fill, dark text.
-   Keep Resources Hub, download buttons, navigation and footer untouched. */
-body.resource-page[data-page="events"] .ev > a.resource-btn,
-body.resource-page[data-page="events"] #form > button.resource-btn[type="submit"] {
-  background: var(--creamish, #eeba7d);
-  border-color: var(--creamish, #eeba7d);
-  color: #111;
-  box-shadow: none;
-  transition: background-color .2s ease, border-color .2s ease, transform .2s ease;
-}
-body.resource-page[data-page="events"] .ev > a.resource-btn:hover,
-body.resource-page[data-page="events"] #form > button.resource-btn[type="submit"]:hover:not(:disabled) {
-  background: #dca362;
-  border-color: #dca362;
-  color: #111;
-  transform: translateY(-2px);
-}
-body.resource-page[data-page="events"] #form > button.resource-btn[type="submit"]:disabled {
-  opacity: .65;
-  cursor: not-allowed;
-  transform: none;
-}
-body.resource-page[data-page="events"] .ev > a.resource-btn:focus-visible,
-body.resource-page[data-page="events"] #form > button.resource-btn[type="submit"]:focus-visible {
-  outline: 2px solid var(--primary-blue, #2b6db2);
-  outline-offset: 3px;
+/* Match the Manufacturing final CTA pill button across Resources pages.
+   Scoped to the bottom CTA: other resource buttons remain unchanged. */
+.resource-page .resource-cta a.resource-btn.resource-btn-navy {
+  border-radius: 999px;
+  padding: 0.9rem 1.75rem;
+  min-height: 54px;
+  white-space: nowrap;
 }

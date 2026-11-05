@@ -18,7 +18,7 @@
   <!-- Set this to your actual Render HTTPS backend origin before going live.
        Example format: https://YOUR-SERVICE.onrender.com (not a real URL). -->
   <meta name="cfocraft-auth-api-origin" content="https://api.cfocraft.com" />
-  <link rel="stylesheet" href="client-login.css?v=email-otp-v6" />
+  <link rel="stylesheet" href="client-login.css?v=client-design-v1" />
 </head>
 
 <body class="client-login-page">
@@ -29,14 +29,14 @@
     </div>
 
     <nav class="login-utility-links" aria-label="Login page links">
-      <a href="https://cfocraft.com/">← Back to website</a>
+      <a href="/">← Back to website</a>
     </nav>
 
     <main class="login-main">
       <section class="login-auth" aria-labelledby="login-title">
-        <h1 id="login-title">Welcome to CFO CRAFT</h1>
+        <h1 id="login-title">Your Business. Your Numbers. Your Edge.</h1>
         <p class="login-subtitle" id="login-subtitle">
-          Secure access to your financial workspace
+          Your financial workspace, built for clarity, control and confident decisions.
         </p>
 
         <!-- Checking HTTP-only cookie with the backend; never trust query params as authentication. -->
@@ -60,12 +60,29 @@
         <!-- Existing users, or new users after one-time Continue. -->
         <div class="auth-view" id="signed-in-view" hidden>
           <div class="client-state-card">
-            <p class="client-state-kicker">SIGNED IN SECURELY</p>
-            <h2>You're signed in</h2>
-            <p>Your CFO CRAFT account is ready.</p>
-            <p class="client-identity" id="signed-in-email"></p>
-            <p class="client-notice">Your financial dashboard will appear here when available.</p>
-            <button class="client-primary-action" id="logout-btn" type="button">Log out</button>
+            <div class="workspace-topline">
+              <p class="client-state-kicker">CFO CRAFT · CLIENT WORKSPACE</p>
+              <span class="workspace-active"><span aria-hidden="true">●</span> Signed in</span>
+            </div>
+            <h2>Your Workspace. Your Next Move.</h2>
+            <p>You're securely connected to CFO CRAFT.</p>
+            <div class="workspace-details">
+              <div class="workspace-identity">
+                <span class="workspace-icon" aria-hidden="true">◉</span>
+                <div><strong>Your CFO CRAFT account</strong><p class="client-identity" id="signed-in-email"></p></div>
+                <span class="workspace-account-status">Active</span>
+              </div>
+              <div class="workspace-pending">
+                <span class="workspace-icon" aria-hidden="true">▤</span>
+                <div><strong>Your financial workspace is being prepared</strong>
+                  <p class="client-notice">Financial reports, documents and collaboration tools will appear here when available.</p>
+                </div>
+              </div>
+            </div>
+            <div class="workspace-actions">
+              <a class="client-secondary-outline" href="/">← Back to website</a>
+              <button class="client-primary-action" id="logout-btn" type="button">Log out</button>
+            </div>
             <p class="auth-status" id="signed-in-status" role="status" aria-live="polite"></p>
           </div>
         </div>
@@ -130,15 +147,19 @@
 
         <!-- EMAIL OTP VERIFICATION -->
         <div class="auth-view" id="email-otp-view" hidden>
-          <p class="otp-label">Enter the 6-digit email verification code</p>
-          <p class="otp-destination" id="email-otp-destination"></p>
+          <div class="verify-intro">
+            <span class="verify-shield" aria-hidden="true">✓</span>
+            <h2>Verify. Secure. Continue.</h2>
+            <p class="otp-label">Enter the verification code sent to your email.</p>
+            <p class="otp-destination" id="email-otp-destination"></p>
+          </div>
           <form id="email-otp-form" novalidate>
-            <div class="otp-entry">
+            <div class="otp-entry email-otp-entry">
               <input id="email-otp-code" type="text" inputmode="numeric" autocomplete="one-time-code"
                      maxlength="6" placeholder="000000" aria-label="6-digit email OTP"
                      aria-describedby="email-otp-status" aria-invalid="false" required />
-              <button class="phone-submit" id="verify-email-otp-btn" type="submit">Verify</button>
             </div>
+            <button class="phone-submit email-verify-submit" id="verify-email-otp-btn" type="submit">Verify &amp; Sign In</button>
             <div class="otp-actions">
               <button class="minor-link" id="change-email-btn" type="button">Change email</button>
               <span id="email-resend-countdown" aria-live="polite"></span>
@@ -332,6 +353,6 @@
 
   </div>
 
-  <script src="client-login.js?v=email-otp-v6" defer></script>
+  <script src="client-login.js?v=client-design-v1" defer></script>
 </body>
 </html>

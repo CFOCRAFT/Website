@@ -145,10 +145,12 @@
       signedInView.hidden = view !== 'signed-in';
       const authenticatedScreen = view === 'continue' || view === 'signed-in';
       showcaseSection.hidden = authenticatedScreen;
-      loginTitle.textContent = authenticatedScreen ? 'Your CFO CRAFT account' : 'Welcome to CFO CRAFT';
+      loginTitle.hidden = authenticatedScreen;
+      loginSubtitle.hidden = authenticatedScreen;
+      loginTitle.textContent = authenticatedScreen ? 'Your CFO CRAFT account' : 'Your Business. Your Numbers. Your Edge.';
       loginSubtitle.textContent = authenticatedScreen
-        ? 'Access your account securely.'
-        : 'Secure access to your financial workspace';
+        ? "You're securely connected to CFO CRAFT."
+        : 'Your financial workspace, built for clarity, control and confident decisions.';
       closeCountryMenu();
     }
 

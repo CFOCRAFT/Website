@@ -1244,3 +1244,16 @@ body.booking-page {
     gap: 9px;
   }
 }
+
+/* Booking header secondary navigation: match Client Login outline back link. */
+.booking-page .navbar .nav-cta[href="/"],
+.booking-page .navbar .nav-cta[href="/"]:hover {
+  border: 1px solid rgba(166,203,247,.65) !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  color: #edf5ff !important;
+}
+.booking-page .navbar.scrolled .nav-cta[href="/"] {color:#082951 !important;border-color:#38618c !important;}
+.booking-page .navbar .nav-cta[href="/"]:hover {background:rgba(166,203,247,.12) !important;}

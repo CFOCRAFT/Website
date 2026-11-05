@@ -4719,6 +4719,56 @@ function cr3nP5oFahNL86vESFrkKjmuupsQa1mPzN7(host) {
   frame.srcdoc = dashboardDocument;
 
   host.replaceChildren(frame);
+  // The expand control belongs to the visual, outside the iframe so it can
+  // receive pointer and keyboard interaction without changing dashboard SVGs.
+  const visual = host.closest(".feature-visual");
+  if (visual && !visual.querySelector(".cfo-dashboard-expand")) {
+    const expand = document.createElement("button");
+    expand.type = "button";
+    expand.className = "cfo-dashboard-expand";
+    expand.setAttribute("aria-label", `Open ${host.dataset.dashboardTitle || "dashboard"} in a new tab`);
+    expand.title = "Open full-size dashboard in new tab";
+    expand.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M3 16v3a2 2 0 0 0 2 2h3M21 16v3a2 2 0 0 1-2 2h-3"/></svg>';
+    expand.addEventListener("click", () => {
+      const doc = CFOCRAFT_DASHBOARD_DOCUMENTS[host.dataset.dashboard];
+      if (!doc) return;
+      // This is a real user click, so browsers can open the full SVG dashboard.
+      // Scope the centering rules to the expanded tab only. Embedded slides
+      // retain their normal sizing, animation and layout.
+      const expandedStyle = `<style id="cfo-expanded-dashboard-layout">
+        html, body { width:100%; min-height:100%; }
+        html { height:100%; }
+        body {
+          box-sizing:border-box!important;
+          display:flex!important;
+          align-items:center!important;
+          justify-content:center!important;
+          min-height:100vh!important;
+          min-height:100dvh!important;
+          padding:clamp(12px,2.5vw,28px)!important;
+          margin:0!important;
+          overflow:auto!important;
+          background:#fff!important;
+        }
+        body > .stage {
+          flex:none;
+          width:min(1100px,calc(100vw - 56px),calc((100dvh - 56px)*16/9))!important;
+          max-width:100%!important;
+          margin:auto!important;
+        }
+        .stage svg { display:block; width:100%!important; height:auto!important; }
+      </style>`;
+      const centeredDoc = doc.replace(/<\/head>/i, expandedStyle + "</head>");
+      const url = URL.createObjectURL(new Blob([centeredDoc], { type: "text/html" }));
+      const link = document.createElement("a");
+      link.href = url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.click();
+      window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+    });
+    visual.appendChild(expand);
+  }
   host.dataset.dashboardMounted = "true";
 }
 

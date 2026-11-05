@@ -3008,6 +3008,35 @@
         window.matchMedia('(min-width: 769px)').addEventListener('change', () => { setOpen(false); setDesktopOpen(false); });
       })();
     </script>
+    <script>
+      // Only the homepage hero booking link carries the optional email forward.
+      (() => {
+        const hero = document.querySelector('.hero-email-form');
+        const input = hero?.querySelector('input[type="email"]');
+        const link = hero?.querySelector('.hero-book-link');
+        if (!input || !link) return;
+
+        const proceed = (event) => {
+          const email = input.value.trim();
+          if (email && !input.checkValidity()) {
+            event.preventDefault();
+            input.reportValidity();
+            return;
+          }
+          if (!email) return; // Normal booking navigation when left blank.
+          const destination = new URL(link.getAttribute('href'), window.location.href);
+          destination.searchParams.set('email', email);
+          link.href = destination.toString();
+        };
+
+        link.addEventListener('click', proceed);
+        input.addEventListener('keydown', (event) => {
+          if (event.key !== 'Enter') return;
+          event.preventDefault();
+          link.click();
+        });
+      })();
+    </script>
     <script src="script.js"></script>
   </body>
 </html>

@@ -91,9 +91,10 @@
               <span>Continue with Email</span>
             </button>
 
-            <div class="login-divider login-method-divider" aria-hidden="true"><span>OR</span></div>
+            <!-- Phone sign-in temporarily hidden for future use. Keep markup and JS intact. -->
+            <div class="login-divider login-method-divider" aria-hidden="true" hidden style="display: none;"><span>OR</span></div>
 
-            <button class="provider-btn login-method-btn" id="show-phone-btn" type="button">
+            <button class="provider-btn login-method-btn" id="show-phone-btn" type="button" hidden style="display: none;" tabindex="-1" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="6.5" y="2.1" width="11" height="19.8" rx="2.5"/>
                 <path d="M10 18.3h4"/>

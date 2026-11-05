@@ -1819,3 +1819,50 @@ body.service-page {
     transform: none !important;
   }
 }
+
+
+/* CFO CRAFT | Outline CTA standard: hero scope + next service. */
+.service-page .service-cta a.service-btn-outline {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  padding: .78rem 1.3rem;
+  border: 1px solid rgba(166,203,247,.62);
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font-weight: 700;
+  font-size: .86rem;
+  text-decoration: none;
+  transition: background .2s ease,border-color .2s ease,transform .2s ease;
+}
+.service-page .service-cta a.service-btn-outline:hover {
+  background: rgba(166,203,247,.14);
+  border-color: #a6cbf7;
+  color: #fff;
+  transform: translateY(-1px);
+}
+.service-page a.service-next-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  min-height: 46px;
+  padding: .76rem 1.25rem;
+  border: 1px solid rgba(8,41,81,.48);
+  border-radius: 999px;
+  background: transparent;
+  color: #082951;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background .2s ease,border-color .2s ease,transform .2s ease;
+}
+.service-page a.service-next-link:hover {
+  background: rgba(43,109,178,.08);
+  border-color: #2b6db2;
+  color: #082951;
+  transform: translateY(-1px);
+}
+.service-page a.service-btn-outline:focus-visible,
+.service-page a.service-next-link:focus-visible {outline: 3px solid #a6cbf7;outline-offset: 3px;}

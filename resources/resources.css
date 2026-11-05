@@ -881,3 +881,52 @@ body.resource-page.case-studies-page .case-status {
   min-height: 54px;
   white-space: nowrap;
 }
+
+
+/* CFO CRAFT | Approved action system. Preserve download links and future templates. */
+/* Light-page outline only for the Resources Hub WhatsApp enquiry. */
+.resource-page .ask-actions a.resource-btn-line {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: .76rem 1.25rem;
+  border: 1px solid rgba(8,41,81,.56);
+  border-radius: 999px;
+  background: transparent;
+  color: #082951;
+  font-weight: 700;
+  transition: background .2s ease,border-color .2s ease,transform .2s ease;
+}
+.resource-page .ask-actions a.resource-btn-line:hover {
+  background: rgba(43,109,178,.08);
+  border-color: #2b6db2;
+  color: #082951;
+  transform: translateY(-1px);
+}
+/* Primary orange pill: Resources Hub email enquiry + Events cards + interest submit. */
+.resource-page .ask-actions a.resource-btn-navy[href^="mailto:"],
+.resource-page .ev > a.resource-btn-sky,
+.resource-page #form button.resource-btn-navy[type="submit"] {
+  min-height: 48px;
+  padding: .78rem 1.45rem;
+  border: 1px solid #eeba7d;
+  border-radius: 999px;
+  background: #eeba7d;
+  color: #082951;
+  font-weight: 750;
+  box-shadow: none;
+  transition: background .2s ease,border-color .2s ease,transform .2s ease,box-shadow .2s ease;
+}
+.resource-page .ask-actions a.resource-btn-navy[href^="mailto:"]:hover,
+.resource-page .ev > a.resource-btn-sky:hover,
+.resource-page #form button.resource-btn-navy[type="submit"]:hover:not(:disabled) {
+  background: #f3c68f;
+  border-color: #f3c68f;
+  color: #082951;
+  transform: translateY(-1px);
+  box-shadow: 0 7px 18px rgba(8,41,81,.12);
+}
+.resource-page .ask-actions a.resource-btn:focus-visible,
+.resource-page .ev > a.resource-btn:focus-visible,
+.resource-page #form button.resource-btn:focus-visible {outline: 3px solid #2b6db2;outline-offset: 3px;}

@@ -1217,14 +1217,14 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   function launch(){
     const card=document.createElement('section'); card.className='report-panel';card.setAttribute('aria-label','Free PDF report');
-    card.innerHTML=`<div class="report-panel-copy"><p class="report-eyebrow">FREE REPORT</p><h3>Download your analysis</h3><p>Your current inputs, calculations and results, prepared as a personalised PDF report.</p></div><button type="button" class="report-open">↓ Download PDF</button>`;
+    card.innerHTML=`<div class="report-panel-copy"><p class="report-eyebrow">FREE REPORT</p><h3>Download your analysis</h3><p>Your current inputs, calculations and results, prepared as a personalised PDF report.</p></div><button type="button" class="report-open">↓ download</button>`;
     const slip=document.querySelector('#tool-start .slip')||document.querySelector('.cfsum .slip');
     if(slip){const stack=document.createElement('div');stack.className='report-result-stack';slip.before(stack);stack.append(slip,card);} else document.querySelector('main')?.append(card);
     document.querySelectorAll('a[href="REPLACE_WITH_TEMPLATE_URL"],a[href="REPLACE_WITH_CMA_TEMPLATE_URL"]').forEach(a=>(a.closest('.slip-note')||a).remove());
     const backdrop=document.createElement('div');backdrop.className='report-backdrop';backdrop.hidden=true;
     backdrop.innerHTML=`<div class="report-modal" role="dialog" aria-modal="true" aria-labelledby="report-modal-title" tabindex="-1">
       <button type="button" class="report-close" aria-label="Close">×</button>
-      <div class="report-head"><p class="report-eyebrow">CFO CRAFT · FREE REPORT</p><h2 id="report-modal-title">Get your personalised PDF report</h2><p>Enter your email to continue. New visitors register once; verified visitors can download again from a trusted browser.</p></div>
+      <div class="report-head"><p class="report-eyebrow">CFO CRAFT · FREE REPORT</p><h2 id="report-modal-title">Get your personalised report</h2><p>Enter your email to continue. New visitors register once; verified visitors can download again from a trusted browser.</p></div>
       <form id="report-email-form" novalidate>
         <label class="report-otp-label">Email address <input type="email" name="email" autocomplete="email" maxlength="180" required placeholder="name@company.com"></label>
         <p class="report-error" role="alert" aria-live="polite" hidden></p>
@@ -1250,7 +1250,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="report-otp-info">A 6-digit verification code has been sent to <strong class="report-email-display"></strong>. It expires in 5 minutes.</div>
       <label class="report-otp-label">Email verification code <input id="report-otp" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" placeholder="000000" required></label>
       <p class="report-error report-otp-error" role="alert" aria-live="polite" hidden></p>
-      <button class="report-primary" type="submit">Verify &amp; Download PDF →</button>
+      <button class="report-primary" type="submit">Verify &amp; download →</button>
       <div class="report-otp-actions"><button type="button" class="report-resend">Resend code</button><button type="button" class="report-edit">Edit email / details</button></div>
       </form></div>`;
     document.body.append(backdrop);
@@ -1411,7 +1411,7 @@ document.addEventListener("DOMContentLoaded", () => {
         await fetchPDF(false);
         downloadToken=null;challengeId=null;lead=null;contactForm.reset();otpForm.reset();contactNames.forEach(name=>{const field=getField(name);if(field)field.dataset.touched='';paintContact(name,'');});otpForm.hidden=true;contactForm.hidden=true;emailForm.hidden=false;
         pending=false;close();
-      }catch(err){error(otpErr,err.message||'Unable to download.');}finally{pending=false;toggleBusy(btn,false,'Verify & Download PDF →');}
+      }catch(err){error(otpErr,err.message||'Unable to download.');}finally{pending=false;toggleBusy(btn,false,'Verify & download →');}
     });
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',launch);else launch();

@@ -992,3 +992,33 @@
     transition: none !important;
   }
 }
+
+
+/* CFO CRAFT | Pricing Full details: Case Studies-style outline pill. */
+.pricing-page .plan a.more,
+.pricing-page .bookend .bp > a {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  justify-content: center;
+  gap: .42rem;
+  min-height: 45px;
+  padding: .72rem 1.2rem;
+  border: 1px solid rgba(8,41,81,.5);
+  border-radius: 999px;
+  background: transparent;
+  color: #082951;
+  font-weight: 700;
+  font-size: .86rem;
+  text-decoration: none;
+  transition: background .2s ease,border-color .2s ease,transform .2s ease;
+}
+.pricing-page .plan a.more:hover,
+.pricing-page .bookend .bp > a:hover {
+  background: rgba(43,109,178,.08);
+  color: #082951;
+  border-color: #2b6db2;
+  transform: translateY(-1px);
+}
+.pricing-page .plan a.more:focus-visible,
+.pricing-page .bookend .bp > a:focus-visible {outline: 3px solid #a6cbf7;outline-offset: 3px;}

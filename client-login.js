@@ -61,7 +61,6 @@
     const checkingView = document.getElementById('checking-view');
     const continueView = document.getElementById('continue-view');
     const signedInView = document.getElementById('signed-in-view');
-    const continueEmail = document.getElementById('continue-email');
     const signedInEmail = document.getElementById('signed-in-email');
     const continueBtn = document.getElementById('continue-btn');
     const continueLogoutBtn = document.getElementById('continue-logout-btn');

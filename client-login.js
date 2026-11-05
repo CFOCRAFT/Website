@@ -335,16 +335,24 @@
       }
     }
 
-    function displayClient(client) {
+    // The backend remains authoritative: only complete setup for a verified
+    // server-side session, and display the workspace after it confirms success.
+    async function displayClient(client) {
+      if (!client.onboardingComplete) {
+        show('checking');
+        const result = await post('/onboarding/complete', {});
+        if (result.success !== true) {
+          throw new Error('Account setup could not be completed. Please try signing in again.');
+        }
+        client = await getSession();
+        if (!client || !client.onboardingComplete) {
+          throw new Error('Could not confirm account setup. Please try signing in again.');
+        }
+      }
       const email = typeof client.email === 'string' && client.email
         ? client.email : (client.phone || 'Verified account');
-      if (client.onboardingComplete) {
-        signedInEmail.textContent = email;
-        show('signed-in');
-      } else {
-        continueEmail.textContent = email;
-        show('continue');
-      }
+      signedInEmail.textContent = email;
+      show('signed-in');
     }
 
     function clearAuthQuery() {
@@ -360,7 +368,7 @@
       try {
         const client = await getSession();
         if (client) {
-          displayClient(client);
+          await displayClient(client);
         } else {
           show('provider');
           const query = new URLSearchParams(window.location.search);
@@ -387,7 +395,7 @@
         const client = await getSession();
         if (!client || !client.onboardingComplete) throw new Error('Could not confirm account setup.');
         setStatus(continueStatus);
-        displayClient(client);
+        await displayClient(client);
       } catch (error) {
         setStatus(continueStatus, friendlyError(error), 'error');
       } finally {
@@ -558,7 +566,7 @@
         if (!client) throw new Error('Code accepted but session could not be confirmed. Please sign in again.');
         emailState.challengeId = '';
         clearInterval(emailState.timer);
-        displayClient(client);
+        await displayClient(client);
       } catch (error) {setStatus(emailOtpStatus,friendlyError(error),'error');}
       finally {verifyEmailOtpBtn.disabled=false;verifyEmailOtpBtn.textContent='Verify';}
     });
@@ -656,12 +664,12 @@
 
         if (result.success !== true) throw new Error('Verification failed. Please try again.');
 
-        // After OTP, show the same first-time/returning-account state as Google.
+        // After OTP, finalize any first-time setup and open the existing workspace.
         // Do not send users to a dashboard route that may not exist yet.
         const client = await getSession();
         if (!client) throw new Error('Code verified, but your session could not be confirmed. Please sign in again.');
         state.challengeId = '';
-        displayClient(client);
+        await displayClient(client);
       } catch (error) {
         setStatus(otpStatus, friendlyError(error), 'error');
       } finally {

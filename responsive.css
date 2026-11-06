@@ -5377,3 +5377,25 @@
     box-shadow: 0 0 0 2px #f0b56b;
   }
 }
+
+
+/* 06 Nov 2026 — Phase 1: mobile navigation viewport safety.
+   Keep the existing nav layout and breakpoints; make its open menu
+   usable when Android Chrome / iOS Safari browser bars change height. */
+@media (max-width: 768px) {
+  .navbar .nav-links {
+    box-sizing: border-box;
+    max-height: calc(100vh - 60px); /* fallback for older browsers */
+    max-height: calc(100dvh - 60px - env(safe-area-inset-bottom, 0px));
+    padding-bottom: max(1.25rem, env(safe-area-inset-bottom, 0px));
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  .navbar .mobile-menu-btn {
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+  }
+}

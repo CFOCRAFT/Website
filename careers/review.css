@@ -44,3 +44,8 @@
 .review-download-form{display:grid;gap:14px;margin-top:30px}
 .review-ready{background:#eef9f2;border:1px solid #bce2c9;color:#195e34}
 .review-download-form input[readonly]{background:#f4f8fc;color:#375879}
+
+/* Bare /careers/review and expired signed links: information-only access screen. */
+.review-access-required{margin-top:28px;border:1px solid #cfe0f2;background:#f2f7fc;border-radius:14px;padding:22px 24px}
+.review-access-required h2{font:700 1.13rem var(--font-heading,"Manrope",sans-serif);color:#082951;margin:0 0 10px}
+.review-access-required p{font-size:.93rem;line-height:1.7;color:#526d87;margin:0}

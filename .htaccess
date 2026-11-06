@@ -5,6 +5,12 @@ RewriteEngine On
 RewriteCond %{THE_REQUEST} \s/+(.+)\.html(?:[\s?]) [NC]
 RewriteRule ^(.+)\.html$ /$1 [R=301,L,NE]
 
+# Canonical landing page for visitors who open /careers/review directly.
+# This redirect deliberately uses a fresh URL so previously cached OTP pages
+# cannot keep appearing under the old bare URL.
+RewriteRule ^careers/review/?$ /careers/review/access [R=302,L,NC]
+RewriteRule ^careers/review/access/?$ careers/review.html [L,NC]
+
 # Both current dynamic reference links and previously emailed /reference links.
 # Signed credential is in the URL fragment (not transmitted to the web server).
 RewriteRule ^careers/review/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/?$ careers/review.html [L,NC]

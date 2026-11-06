@@ -55,8 +55,20 @@
   if (uuid.test(id)) $('application-id').value = id;
   button.disabled = !valid;
   if (!valid) {
-    errorBox.textContent = 'This link is missing, invalid or expired. Open the secure CV link from your Careers email, or contact CFO CRAFT for a new link.';
-    errorBox.hidden = false;
+    // The bare review URL is intentionally an information-only page.
+    // Never allow a CV download based on a manually entered application ID.
+    const accessRequired = $('review-access-required');
+    const accessDescription = $('review-access-description');
+    const hasCredential = Boolean(pathId || legacyId || expires || signature);
+    $('review-title').textContent = 'Secure CV access required';
+    document.querySelector('.review-heading .intro').textContent = hasCredential
+      ? 'This private CV link is invalid or has expired.'
+      : 'Your CV is accessible through the private link sent by CFO CRAFT.';
+    if (hasCredential) {
+      accessDescription.textContent = 'Please open the original link from your Careers email, or contact CFO CRAFT for a new link. An Application ID alone cannot unlock a CV.';
+    }
+    form.hidden = true;
+    accessRequired.hidden = false;
   }
   form.addEventListener('submit', event => {
     event.preventDefault();

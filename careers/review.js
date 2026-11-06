@@ -1,17 +1,11 @@
 (() => {
   'use strict';
-  const BASE = 'https://api.cfocraft.com/api/careers/cv';
-  const $ = (id) => document.getElementById(id);
+  const $ = id => document.getElementById(id);
   const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-  const requestForm = $('request-form');
-  const downloadForm = $('download-form');
+  const form = $('review-download-form');
+  const button = $('review-download-button');
   const errorBox = $('review-error');
-  const requestButton = $('request-button');
-  const downloadButton = $('download-button');
-  const resendButton = $('resend-code');
-  let state = 'request';
-  let activeApplicationId = '';
-
+  const successBox = $('review-success');
   // Same isolated responsive navbar behaviour as careers/apply.html.
   const mobileButton = $('mobileMenuBtn');
   const links = document.querySelector('.nav-links');
@@ -41,79 +35,33 @@
     mobileButton?.setAttribute('aria-expanded', 'false');
   }));
 
-  const provided = new URLSearchParams(window.location.search).get('application');
-  if (provided && uuid.test(provided)) $('application-id').value = provided;
 
-  const clearError = () => { errorBox.hidden = true; errorBox.textContent = ''; };
-  const showError = text => { errorBox.textContent = text; errorBox.hidden = false; };
-  const render = () => {
-    requestForm.hidden = state !== 'request';
-    downloadForm.hidden = state !== 'verify';
-    $('review-workflow').hidden = state === 'success';
-    $('review-success').hidden = state !== 'success';
-    $('step-one').classList.toggle('active', state === 'request');
-    $('step-two').classList.toggle('active', state === 'verify' || state === 'success');
-    document.querySelector('.review-progress').hidden = state === 'success';
-    $('review-fineprint').hidden = state === 'success';
-  };
-  clearError();
-  render();
-
-  async function sendCode() {
-    clearError();
-    const id = $('application-id').value.trim();
-    if (!uuid.test(id)) { showError('Enter a valid Application ID.'); return; }
-    requestButton.disabled = true;
-    resendButton.disabled = true;
-    try {
-      const resp = await fetch(`${BASE}/request-code`, {
-        method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({application_id:id}), credentials:'omit'
-      });
-      const data = await resp.json().catch(() => ({}));
-      if (!resp.ok) throw new Error(data.message || 'Could not send verification code.');
-      activeApplicationId = id;
-      $('verification-code').value = '';
-      state = 'verify';
-      render();
-      $('verification-code').focus();
-    } catch (err) { showError(err.message || 'Unable to send code. Please try again.'); }
-    finally { requestButton.disabled = false; resendButton.disabled = false; }
+  // Only the signed credentials delivered in the email may authorize a download.
+  // URL fragments are never transmitted to the website server in an HTTP request.
+  const params = new URLSearchParams(window.location.hash.slice(1));
+  const id = params.get('application') || '';
+  const expires = params.get('expires') || '';
+  const signature = params.get('signature') || '';
+  // Remove sensitive URL fragment from history/address bar after reading it.
+  if (window.location.hash) history.replaceState(null, '', window.location.pathname + window.location.search);
+  const valid = uuid.test(id) && /^\d{10}$/.test(expires) && /^[a-f0-9]{64}$/.test(signature)
+    && Number(expires) > Math.floor(Date.now() / 1000)
+    && Number(expires) <= Math.floor(Date.now() / 1000) + 7 * 86400;
+  if (uuid.test(id)) $('application-id').value = id;
+  button.disabled = !valid;
+  if (!valid) {
+    errorBox.textContent = 'This link is missing, invalid or expired. Open the secure CV link from your Careers email, or contact CFO CRAFT for a new link.';
+    errorBox.hidden = false;
   }
-  requestForm.addEventListener('submit', event => { event.preventDefault(); if (state === 'request') void sendCode(); });
-  resendButton.addEventListener('click', async () => {
-    if (state !== 'verify') return;
-    // Keep code input visible on resend, do not show both forms.
-    $('application-id').value = activeApplicationId;
-    await sendCode();
-  });
-  downloadForm.addEventListener('submit', async event => {
+  form.addEventListener('submit', event => {
     event.preventDefault();
-    if (state !== 'verify') return;
-    clearError();
-    const code = $('verification-code').value.trim();
-    if (!/^\d{8}$/.test(code)) { showError('Enter the valid 8-digit verification code.'); return; }
-    downloadButton.disabled = true;
-    try {
-      const resp = await fetch(`${BASE}/download`, {
-        method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({application_id:activeApplicationId,code}), credentials:'omit'
-      });
-      if (!resp.ok) { const err = await resp.json().catch(() => ({})); throw new Error(err.message || 'Code invalid or expired.'); }
-      if (!String(resp.headers.get('Content-Type') || '').toLowerCase().includes('application/pdf')) throw new Error('Unexpected server response.');
-      const blob = await resp.blob();
-      const disposition = resp.headers.get('Content-Disposition') || '';
-      const match = disposition.match(/filename="([^"\\]+)"/);
-      const fileName = match ? match[1] : `CFO-CRAFT-CV-${activeApplicationId}.pdf`;
-      const objectUrl = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = objectUrl; a.download = fileName;
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
-      $('verification-code').value = '';
-      state = 'success';
-      render();
-    } catch (err) { showError(err.message || 'Could not download CV.'); }
-    finally { downloadButton.disabled = false; }
+    if (!valid) return;
+    const url = new URL(`https://api.cfocraft.com/api/careers/cv/file/${encodeURIComponent(id)}`);
+    url.searchParams.set('expires', expires);
+    url.searchParams.set('signature', signature);
+    // Normal browser navigation supports Content-Disposition: attachment cross-origin,
+    // unlike fetch(), which would need CORS and could expose CV content to page JS.
+    successBox.hidden = false;
+    window.location.assign(url.toString());
   });
 })();

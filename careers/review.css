@@ -40,3 +40,7 @@
 @media(max-width:768px){.review-page .navbar .nav-links{background:#fff}.review-page .navbar .nav-links .nav-link{color:#082951}.review-main{padding:102px 16px 40px}.review-card{border-radius:18px;padding:25px 20px}}
 @media(max-width:500px){.review-main{padding:90px 12px 28px}.review-progress{gap:6px}.review-progress-step{font-size:.7rem}.review-progress-step span{width:26px;height:26px}.review-card{padding:22px 17px}}
 @media(prefers-reduced-motion:reduce){.review-page *{transition:none!important}}
+
+.review-download-form{display:grid;gap:14px;margin-top:30px}
+.review-ready{background:#eef9f2;border:1px solid #bce2c9;color:#195e34}
+.review-download-form input[readonly]{background:#f4f8fc;color:#375879}

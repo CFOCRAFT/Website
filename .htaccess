@@ -5,6 +5,10 @@ RewriteEngine On
 RewriteCond %{THE_REQUEST} \s/+(.+)\.html(?:[\s?]) [NC]
 RewriteRule ^(.+)\.html$ /$1 [R=301,L,NE]
 
+# Review links in Careers emails resolve to the same static review page.
+# Credential is carried only in the URL fragment (not sent to this server).
+RewriteRule ^careers/review/reference/?$ careers/review.html [L]
+
 # 2. Existing files aur directories ko as-is serve karo
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d

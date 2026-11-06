@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+<meta name="referrer" content="no-referrer">
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow,noarchive">
 <title>Private CV Access | CFO CRAFT Careers</title>
@@ -873,36 +874,22 @@
       </div>
     </nav>
 <main class="review-main">
-<section class="review-card" aria-labelledby="review-title">
-<div class="review-heading"><span class="review-kicker">PRIVATE CV ACCESS</span><h1 id="review-title">Download an applicant’s CV</h1>
-<p class="intro">Use the Application ID from your CFO CRAFT Careers notification. We'll send a one-time code to the authorized owner email.</p></div>
-<div class="review-progress" aria-label="Verification progress">
-<span id="step-one" class="review-progress-step active"><span>01</span> Request code</span>
-<span class="review-progress-line" aria-hidden="true"></span>
-<span id="step-two" class="review-progress-step"><span>02</span> Verify &amp; download</span>
-</div>
-<div id="review-workflow">
-<form id="request-form">
-<label for="application-id">Application ID</label>
-<input id="application-id" required autocomplete="off" spellcheck="false" placeholder="e.g. 12345678-1234-..." maxlength="36">
-<button id="request-button" type="submit">Send verification code <span aria-hidden="true">→</span></button>
-</form>
-<form id="download-form" hidden>
-<p class="review-step-help">Verification code sent to the owner email. Enter the 8-digit code below to download the CV.</p>
-<label for="verification-code">8-digit verification code</label>
-<input id="verification-code" type="text" required autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]{8}" maxlength="8" placeholder="Enter 8-digit code">
-<button id="download-button" type="submit">Verify &amp; download <span aria-hidden="true">↓</span></button>
-<p class="review-resend-help">Didn't receive the code? <button type="button" id="resend-code" class="review-text-button">Send a new code</button></p>
-</form>
-<p id="review-error" class="review-status error" role="alert" hidden></p>
-</div>
-<div id="review-success" class="review-success" role="status" aria-live="polite" hidden>
-<div class="review-success-icon" aria-hidden="true">✓</div>
-<h2>CV downloaded successfully</h2>
-<p>Your PDF download has started. For security, this one-time verification code can’t be reused.</p>
-</div>
-<p id="review-fineprint" class="fineprint">For authorized CFO CRAFT reviewers only. Verification codes expire in 10 minutes and can be used once. CVs are never publicly accessible.</p>
-</section>
+  <section class="review-card" aria-labelledby="review-title">
+    <div class="review-heading">
+      <span class="review-kicker">PRIVATE CV ACCESS</span>
+      <h1 id="review-title">Download your submitted CV</h1>
+      <p class="intro">Open the personal link in your CFO CRAFT Careers email. Your reference is filled automatically; select Download to save your PDF.</p>
+    </div>
+    <form id="review-download-form" class="review-download-form">
+      <label for="application-id">Application reference</label>
+      <input id="application-id" autocomplete="off" spellcheck="false" readonly placeholder="Open the secure link from your email" aria-describedby="review-help">
+      <p id="review-help" class="review-step-help">Only a valid, unexpired link from your application acknowledgement or the owner notification can download this CV. Application ID alone is not sufficient.</p>
+      <button id="review-download-button" type="submit" disabled>Download CV <span aria-hidden="true">↓</span></button>
+      <p id="review-error" class="review-status error" role="alert" hidden></p>
+      <p id="review-success" class="review-status review-ready" role="status" hidden>Your download was requested. Please check your browser's downloads.</p>
+    </form>
+    <p class="fineprint">Private link valid for 7 days from when the email was sent. Do not forward this email or share the link. If it has expired, contact CFO CRAFT for assistance.</p>
+  </section>
 </main>
 <script src="review.js" defer></script>
 </body></html>

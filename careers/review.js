@@ -39,12 +39,17 @@
   // Only the signed credentials delivered in the email may authorize a download.
   // URL fragments are never transmitted to the website server in an HTTP request.
   const params = new URLSearchParams(window.location.hash.slice(1));
-  const id = params.get('application') || '';
+  // New links carry the reference in the URL path; keep older /reference emails working.
+  const pathId = window.location.pathname.match(/^\/careers\/review\/([0-9a-f-]{36})\/?$/i)?.[1] || '';
+  const legacyId = params.get('application') || '';
+  // Never accept contradictory IDs from path and fragment.
+  const id = pathId || legacyId;
+  const referenceMatches = !pathId || !legacyId || pathId.toLowerCase() === legacyId.toLowerCase();
   const expires = params.get('expires') || '';
   const signature = params.get('signature') || '';
   // Remove sensitive URL fragment from history/address bar after reading it.
   if (window.location.hash) history.replaceState(null, '', window.location.pathname + window.location.search);
-  const valid = uuid.test(id) && /^\d{10}$/.test(expires) && /^[a-f0-9]{64}$/.test(signature)
+  const valid = referenceMatches && uuid.test(id) && /^\d{10}$/.test(expires) && /^[a-f0-9]{64}$/.test(signature)
     && Number(expires) > Math.floor(Date.now() / 1000)
     && Number(expires) <= Math.floor(Date.now() / 1000) + 7 * 86400;
   if (uuid.test(id)) $('application-id').value = id;

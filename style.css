@@ -6579,3 +6579,19 @@ h6,
   }
 
 }
+
+/* CFO CRAFT — Slider typography colour alignment (12 Nov 2026)
+   Match the “You already have an accountant” heading and its supporting text.
+   Keep active navigation styling, dimensions and animations unchanged. */
+.home-page #industries.cfo-story .cfo-story-panel .feature-title,
+.home-page #services.cfo-story .cfo-story-panel .feature-title {
+  color: var(--dark-blue) !important;
+}
+.home-page #industries.cfo-story .cfo-story-panel .feature-desc,
+.home-page #services.cfo-story .cfo-story-panel .feature-desc {
+  color: var(--gray-600) !important;
+}
+.home-page #industries.cfo-story .cfo-story-segment:not(.is-active) .cfo-story-segment-label,
+.home-page #services.cfo-story .cfo-story-segment:not(.is-active) .cfo-story-segment-label {
+  color: var(--dark-blue) !important;
+}

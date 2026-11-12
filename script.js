@@ -132,92 +132,180 @@ document.addEventListener("DOMContentLoaded", () => {
       revealObserver.observe(el);
     });
 
-  // ===== How It Works — responsive scroll progress, immediate step changes =====
-  const howSection = document.getElementById("how-it-works");
-  const howJourney = howSection?.querySelector("[data-how-journey]");
-  const howProgressPath = howSection?.querySelector("[data-how-progress-path]");
-  const howTraveller = howSection?.querySelector("[data-how-traveller]");
-  const howNodes = howSection
-    ? [...howSection.querySelectorAll("[data-node-index]")]
-    : [];
-  const howCards = howSection
-    ? [...howSection.querySelectorAll("[data-step-index]")]
-    : [];
+  // ===== HOW IT WORKS — content-paced, bidirectional curved journey =====
+  // Native scrolling controls BOTH the traveller and the progressive paragraph
+  // reveal. Longer descriptions receive proportionally more of the scroll track.
+  (() => {
+    const section = document.getElementById("how-it-works");
+    const journey = section?.querySelector("[data-how-journey]");
+    const path = section?.querySelector("[data-how-progress-path]");
+    const traveller = section?.querySelector("[data-how-traveller]");
+    const nodes = [...(section?.querySelectorAll("[data-node-index]") || [])];
+    const cards = [...(section?.querySelectorAll("[data-step-index]") || [])];
+    if (!section || !journey || !path || cards.length !== 4 || nodes.length !== 4) return;
 
-  if (
-    howSection &&
-    howJourney &&
-    howProgressPath &&
-    howNodes.length &&
-    howCards.length
-  ) {
-    let howRaf = 0;
-    const pathLength = howProgressPath.getTotalLength
-      ? howProgressPath.getTotalLength()
-      : 900;
+    const desktop = window.matchMedia("(min-width: 1025px)");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const clamp = (x) => Math.max(0, Math.min(1, x));
+    const smoothstep = (x) => { const t = clamp(x); return t * t * (3 - 2 * t); };
+    let frame = 0;
+    let pathLength = 1;
+    const nodePositions = nodes.map((node) => {
+      const match = node.getAttribute("transform")?.match(/translate\(([\d.]+)\s+([\d.]+)\)/);
+      return match ? { x: +match[1], y: +match[2] } : { x: 0, y: 0 };
+    });
+    const arcMilestones = [0, 1 / 3, 2 / 3, 1];
 
-    howProgressPath.style.strokeDasharray = `${pathLength} ${pathLength}`;
-    howProgressPath.style.strokeDashoffset = `${pathLength}`;
+    // Each word fades/clears in scroll order; the original prose is unchanged.
+    // Text remains available to screen readers as one paragraph label.
+    const descriptions = cards.map((card) => {
+      const paragraph = card.querySelector(".step-desc");
+      if (!paragraph) return [];
+      const text = paragraph.textContent.replace(/\s+/g, " ").trim();
+      paragraph.setAttribute("aria-label", text);
+      paragraph.textContent = "";
+      const words = text.split(" ");
+      const spans = [];
+      words.forEach((word, index) => {
+        const span = document.createElement("span");
+        span.className = "how-reveal-word";
+        span.setAttribute("aria-hidden", "true");
+        span.textContent = word;
+        paragraph.appendChild(span);
+        if (index < words.length - 1) paragraph.appendChild(document.createTextNode(" "));
+        spans.push(span);
+      });
+      return spans;
+    });
 
-    const setHowProgress = () => {
-      howRaf = 0;
+    // The interval ending at a card is weighted by that card's text length.
+    // A base amount preserves a comfortable transition even for short copy.
+    const weights = descriptions.slice(1).map((words) => 18 + words.length * 2);
+    const sum = weights.reduce((a, b) => a + b, 0);
+    const scrollStops = [0];
+    let accumulated = 0;
+    for (const weight of weights) {
+      accumulated += weight / sum;
+      scrollStops.push(accumulated);
+    }
+    scrollStops[3] = 1;
 
-      if (window.innerWidth <= 768) {
-        howCards.forEach((card, i) => {
-          card.classList.toggle("is-active", i === 0);
-          card.classList.remove("is-complete");
+    function measure() {
+      pathLength = Math.max(1, path.getTotalLength());
+      const samples = 400;
+      nodePositions.forEach((node, index) => {
+        let closest = 0, best = Infinity;
+        for (let i = 0; i <= samples; i++) {
+          const distance = pathLength * i / samples;
+          const point = path.getPointAtLength(distance);
+          const error = (point.x - node.x) ** 2 + (point.y - node.y) ** 2;
+          if (error < best) { best = error; closest = distance / pathLength; }
+        }
+        arcMilestones[index] = closest;
+      });
+      path.style.strokeDasharray = `${pathLength} ${pathLength}`;
+      paint();
+    }
+
+    function renderDescription(index, reveal) {
+      const words = descriptions[index];
+      const amount = clamp(reveal);
+      words.forEach((word, wordIndex) => {
+        // Each word gets its own scroll interval, including the final word.
+        // Completed words remain fully opaque and sharp, never blurred again
+        // until the visitor actually reverses back through this interval.
+        const start = wordIndex / words.length;
+        const end = (wordIndex + 0.85) / words.length;
+        const alpha = smoothstep((amount - start) / (end - start));
+        word.style.opacity = alpha.toFixed(3);
+        word.style.filter = alpha >= 0.999 ? "none" : `blur(${((1 - alpha) * 1.35).toFixed(2)}px)`;
+        word.style.transform = alpha >= 0.999 ? "none" : `translateY(${((1 - alpha) * 2).toFixed(2)}px)`;
+      });
+    }
+
+    function paint() {
+      frame = 0;
+      if (!desktop.matches || reducedMotion.matches) {
+        // Accessible tablet/mobile/reduced-motion mode: all copy is legible.
+        descriptions.forEach((words, index) => {
+          words.forEach((word) => { word.style.opacity = "1"; word.style.filter = "none"; word.style.transform = "none"; });
+          cards[index].style.setProperty("--how-card-focus", "1");
         });
-        howNodes.forEach((node, i) => {
-          node.classList.toggle("is-active", i === 0);
-          node.classList.remove("is-complete");
-        });
+        if (!desktop.matches) {
+          const focusY = window.innerHeight * 0.5;
+          let nearest = 0, gap = Infinity;
+          cards.forEach((card, i) => {
+            const rect = card.getBoundingClientRect();
+            const delta = Math.abs((rect.top + rect.bottom) / 2 - focusY);
+            if (delta < gap) { gap = delta; nearest = i; }
+          });
+          cards.forEach((card, i) => {
+            card.classList.toggle("is-active", i === nearest);
+            card.classList.toggle("is-complete", i < nearest);
+          });
+        }
         return;
       }
 
-      const rect = howSection.getBoundingClientRect();
-      const navOffset = 76;
-
-      // Complete the 4-step progression within ~72% of one viewport.
-      // This removes the old "late" highlight feeling.
-      const travel = Math.max(1, howSection.offsetHeight * 0.72);
-      const raw = (navOffset - rect.top) / travel;
-      const progress = Math.max(0, Math.min(1, raw));
-
-      const active = Math.min(
-        howCards.length - 1,
-        Math.floor(progress * howCards.length + 0.0001),
-      );
-
-      howJourney.style.setProperty("--how-progress", progress.toFixed(4));
-      howProgressPath.style.strokeDashoffset = `${(pathLength * (1 - progress)).toFixed(2)}`;
-
-      if (howTraveller && howProgressPath.getPointAtLength) {
-        const point = howProgressPath.getPointAtLength(pathLength * progress);
-        howTraveller.setAttribute("cx", point.x.toFixed(2));
-        howTraveller.setAttribute("cy", point.y.toFixed(2));
-        howTraveller.style.opacity =
-          progress > 0.015 && progress < 0.995 ? "1" : "0";
+      const top = section.getBoundingClientRect().top;
+      const travel = Math.max(1, section.offsetHeight - window.innerHeight);
+      const progress = clamp(-top / travel);
+      let segment = 0;
+      for (let i = 0; i < 3; i++) if (progress >= scrollStops[i]) segment = i;
+      segment = Math.min(2, segment);
+      const span = Math.max(0.00001, scrollStops[segment + 1] - scrollStops[segment]);
+      const local = clamp((progress - scrollStops[segment]) / span);
+      // Exact arc fractions keep traveller perfectly aligned with node circles.
+      const arcFraction = arcMilestones[segment] + (arcMilestones[segment + 1] - arcMilestones[segment]) * local;
+      const arc = clamp(arcFraction) * pathLength;
+      journey.style.setProperty("--how-progress", progress.toFixed(5));
+      path.style.strokeDashoffset = `${(pathLength - arc).toFixed(2)}`;
+      if (traveller) {
+        const point = path.getPointAtLength(arc);
+        traveller.setAttribute("cx", point.x.toFixed(2));
+        traveller.setAttribute("cy", point.y.toFixed(2));
+        traveller.style.opacity = progress > 0.006 && progress < 0.994 ? "1" : "0";
       }
 
-      howNodes.forEach((node, i) => {
-        node.classList.toggle("is-complete", i < active);
+      // Cumulative reveal: completed steps stay readable. Only the paragraph
+      // belonging to the destination node unfolds during its scroll segment.
+      // Reversing through a segment gradually conceals *that* paragraph,
+      // while every earlier completed paragraph stays fully legible.
+      descriptions.forEach((words, i) => {
+        const reveal = i === 0 ? 1 :
+          i <= segment ? 1 :
+          i === segment + 1 ? local : 0;
+        renderDescription(i, reveal);
+
+        // Keep previous cards gently accented without competing with the
+        // currently progressing card. All four headings remain visible.
+        const focus = i === segment ? 1 - 0.66 * smoothstep(local) :
+          i === segment + 1 ? smoothstep(local) :
+          i < segment ? 0.34 : 0;
+        cards[i].style.setProperty("--how-card-focus", focus.toFixed(4));
+        cards[i].style.setProperty("--how-border-alpha", (0.19 + 0.4 * focus).toFixed(3));
+        cards[i].style.setProperty("--how-bg-alpha", (0.28 + 0.18 * focus).toFixed(3));
+        cards[i].style.setProperty("--how-shadow-alpha", (0.14 + 0.08 * focus).toFixed(3));
+      });
+      const active = progress >= 1 ? 3 : local >= 0.5 ? segment + 1 : segment;
+      nodes.forEach((node, i) => {
         node.classList.toggle("is-active", i === active);
+        node.classList.toggle("is-complete", i < active);
       });
-
-      howCards.forEach((card, i) => {
-        card.classList.toggle("is-complete", i < active);
+      cards.forEach((card, i) => {
         card.classList.toggle("is-active", i === active);
+        card.classList.toggle("is-complete", i < active);
       });
-    };
+    }
 
-    const requestHowUpdate = () => {
-      if (!howRaf) howRaf = requestAnimationFrame(setHowProgress);
-    };
-
-    window.addEventListener("scroll", requestHowUpdate, { passive: true });
-    window.addEventListener("resize", requestHowUpdate);
-    setHowProgress();
-  }
+    const request = () => { if (!frame) frame = requestAnimationFrame(paint); };
+    window.addEventListener("scroll", request, { passive: true });
+    window.addEventListener("resize", () => { measure(); request(); }, { passive: true });
+    desktop.addEventListener?.("change", () => { measure(); request(); });
+    reducedMotion.addEventListener?.("change", request);
+    measure();
+    window.addEventListener("load", measure, { once: true });
+  })();
 
   // ===== CASE STUDIES — 9-STEP PREMIUM PINNED SHOWCASE =====
   (() => {

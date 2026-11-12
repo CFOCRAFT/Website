@@ -5399,3 +5399,118 @@
     touch-action: manipulation;
   }
 }
+
+/* ========================================================================
+   CFO CRAFT — EXECUTIVE CURVED JOURNEY (desktop scroll-pinned)
+   This final scoped override supersedes older 100svh layout rules.
+   ======================================================================== */
+@media (min-width: 1025px) {
+  .home-page #how-it-works.section-how {
+    position: relative !important;
+    display: block !important;
+    box-sizing: border-box !important;
+    height: 440svh !important;
+    min-height: 440svh !important;
+    max-height: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    scroll-snap-align: none !important;
+    scroll-snap-stop: normal !important;
+    scroll-margin-top: 0 !important;
+  }
+  .home-page #how-it-works > .how-journey-container {
+    position: sticky !important;
+    top: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    height: 100svh !important;
+    min-height: 100svh !important;
+    max-height: 100svh !important;
+    padding-top: max(90px, var(--home-nav-offset, 76px)) !important;
+    padding-bottom: 1.25rem !important;
+    margin: 0 auto !important;
+    overflow: visible !important;
+  }
+  .home-page #how-it-works .how-journey-header {
+    transform: none !important;
+    margin: 0 0 clamp(1rem, 3vh, 2rem) !important;
+    flex: 0 0 auto !important;
+  }
+  .home-page #how-it-works .how-journey { flex: 0 0 auto !important; }
+  .home-page #how-it-works .how-journey-stage {
+    height: clamp(292px, 43svh, 370px) !important;
+    min-height: 0 !important;
+    flex-basis: auto !important;
+  }
+  .home-page #how-it-works .how-journey-svg {
+    display: block !important;
+    overflow: visible !important;
+  }
+  .home-page #how-it-works .how-track-base {
+    stroke: rgba(166, 203, 247, .28) !important;
+    stroke-width: 3 !important;
+  }
+  .home-page #how-it-works .how-track-progress {
+    stroke: #a6cbf7 !important;
+    stroke-width: 3.4 !important;
+    filter: none !important;
+    transition: none !important;
+  }
+  .home-page #how-it-works .how-scroll-traveller {
+    fill: #eeba7d !important;
+    filter: none !important;
+  }
+  .home-page #how-it-works .how-svg-node.is-active .how-node-core {
+    filter: none !important;
+  }
+  .home-page #how-it-works .how-step-journey.is-active {
+    box-shadow: 0 12px 32px rgba(2, 12, 27, .22) !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-page #how-it-works .how-step-journey,
+  .home-page #how-it-works .how-track-progress,
+  .home-page #how-it-works .how-scroll-traveller { transition: none !important; }
+}
+
+/* CFO CRAFT — scroll-paced, word-by-word curved journey */
+@media (min-width: 1025px) {
+  .home-page #how-it-works[data-content-paced-timeline].section-how {
+    height: 520svh !important;
+    min-height: 520svh !important;
+  }
+  .home-page #how-it-works .how-step-journey {
+    transition: border-color .18s ease, background .18s ease !important;
+    border-color: rgba(166,203,247,var(--how-border-alpha, .19)) !important;
+    background: linear-gradient(145deg, rgba(25,74,122,var(--how-bg-alpha, .28)),rgba(8,41,81,.34)) !important;
+    box-shadow: 0 11px 28px rgba(2,12,27,var(--how-shadow-alpha, .14)) !important;
+  }
+  .home-page #how-it-works .how-step-journey .step-title {
+    opacity: 1 !important;
+  }
+  .home-page #how-it-works .how-step-journey .step-desc {
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
+  .home-page #how-it-works .how-reveal-word {
+    display: inline-block;
+    will-change: opacity, filter;
+    transition: none !important;
+  }
+  .home-page #how-it-works .how-step-journey.is-active {
+    transform: translateX(-50%) !important;
+  }
+}
+@media (max-width: 1024px), (prefers-reduced-motion: reduce) {
+  .home-page #how-it-works .how-reveal-word {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+  }
+}

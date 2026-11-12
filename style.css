@@ -6559,3 +6559,23 @@ h6,
   outline: 3px solid #a6cbf7;
   outline-offset: 3px;
 }
+
+/* CFO CRAFT — Industry & Services Alignment Fix */
+@media (min-width: 1025px) {
+
+  .home-page #industries.cfo-story .cfo-story-panel,
+  .home-page #services.cfo-story .cfo-story-panel {
+
+    grid-template-columns:
+      minmax(0, 1fr) minmax(0, 1fr) !important;
+
+    column-gap: 28px !important;
+  }
+
+  .home-page #industries.cfo-story .cfo-story-panel .feature-desc,
+  .home-page #services.cfo-story .cfo-story-panel .feature-desc {
+
+    max-width: 60ch !important;
+  }
+
+}

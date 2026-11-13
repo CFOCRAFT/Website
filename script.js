@@ -307,7 +307,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("load", measure, { once: true });
   })();
 
-  // ===== HOW IT WORKS — KINETIC TRACK (click, keyboard, optional autoplay) =====
+  // ===== HOW IT WORKS — AUTO KINETIC TRACK (manual selection pauses for 12s) =====
   (() => {
     const root = document.querySelector("[data-kinetic-track]");
     if (!root) return;
@@ -315,10 +315,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const fill = root.querySelector("[data-kinetic-fill]");
     const number = root.querySelector("[data-kinetic-number]");
     const copy = root.querySelector("[data-kinetic-copy]");
-    const previous = root.querySelector("[data-kinetic-prev]");
-    const next = root.querySelector("[data-kinetic-next]");
-    const play = root.querySelector("[data-kinetic-play]");
-    if (stops.length !== 4 || !fill || !number || !copy || !previous || !next || !play) return;
+    if (stops.length !== 4 || !fill || !number || !copy) return;
 
     const descriptions = [
       "A Finance Diagnostic: a deep look at your books, cash, margins and compliance. An honest picture of where you stand — before any long-term commitment.",
@@ -327,13 +324,14 @@ document.addEventListener("DOMContentLoaded", () => {
       "Every month you sit down with your CFO to look forward — pricing, hiring, capex, funding. This is where reporting turns into results.",
     ];
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const STEP_INTERVAL = 5000; // Each of the four stages gets the same 5 seconds.
+    const MANUAL_WAIT = 12000; // 12 seconds before auto-advancing after a click.
     let active = 0;
     let timer = null;
-    const stopAuto = () => {
-      if (timer !== null) clearInterval(timer);
+    let inView = false;
+    const cancelTimer = () => {
+      if (timer !== null) window.clearTimeout(timer);
       timer = null;
-      play.textContent = "▶ Auto preview";
-      play.setAttribute("aria-pressed", "false");
     };
     const show = (value) => {
       active = (value + stops.length) % stops.length;
@@ -349,22 +347,43 @@ document.addEventListener("DOMContentLoaded", () => {
       // The visible track spans 75% of the row, so each step advances 25%.
       fill.style.width = `${(active / (stops.length - 1)) * 75}%`;
     };
+    const canPlay = () => inView && !document.hidden && !reducedMotion.matches;
+    const scheduleNext = (delay = STEP_INTERVAL) => {
+      cancelTimer();
+      if (!canPlay()) return;
+      timer = window.setTimeout(() => {
+        timer = null;
+        if (!canPlay()) return;
+        show(active + 1);
+        scheduleNext(STEP_INTERVAL);
+      }, delay);
+    };
     stops.forEach((button, index) => button.addEventListener("click", () => {
-      stopAuto();
       show(index);
+      // Restart the full 12-second hold on every manual selection.
+      scheduleNext(MANUAL_WAIT);
     }));
-    previous.addEventListener("click", () => { stopAuto(); show(active - 1); });
-    next.addEventListener("click", () => { stopAuto(); show(active + 1); });
-    play.addEventListener("click", () => {
-      if (timer !== null) return stopAuto();
-      show(active + 1);
-      if (reducedMotion.matches) return;
-      timer = window.setInterval(() => show(active + 1), 2300);
-      play.textContent = "Ⅱ Pause preview";
-      play.setAttribute("aria-pressed", "true");
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver((entries) => {
+        const visible = entries[0]?.isIntersecting ?? false;
+        if (visible === inView) return;
+        inView = visible;
+        if (inView) scheduleNext();
+        else cancelTimer();
+      }, { threshold: 0.35 });
+      observer.observe(root);
+    } else {
+      inView = true;
+      scheduleNext();
+    }
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) cancelTimer();
+      else scheduleNext();
     });
-    document.addEventListener("visibilitychange", () => { if (document.hidden) stopAuto(); });
-    reducedMotion.addEventListener?.("change", () => { if (reducedMotion.matches) stopAuto(); });
+    reducedMotion.addEventListener?.("change", () => {
+      if (reducedMotion.matches) cancelTimer();
+      else scheduleNext();
+    });
     show(0);
   })();
 

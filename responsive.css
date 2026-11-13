@@ -5943,3 +5943,24 @@
     padding-bottom: 15px;
   }
 }
+
+/* Automatic Kinetic Track: with the controllers removed, centre the story
+   card under all four stops and use the full available visual balance. */
+@media (min-width: 900px) {
+  .home-page #how-it-works .cfo-kinetic {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  .home-page #how-it-works .cfo-kinetic-track {
+    grid-column: 1;
+  }
+  .home-page #how-it-works .cfo-kinetic-detail {
+    grid-column: 1;
+    grid-row: 2;
+    width: 100%;
+    max-width: 1320px;
+    margin-left: auto;
+    margin-right: auto;
+    grid-template-columns: clamp(110px, 11vw, 175px) minmax(0, 1fr);
+    gap: clamp(12px, 2vw, 28px);
+  }
+}

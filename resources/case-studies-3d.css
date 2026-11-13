@@ -17,6 +17,38 @@
 .case3d-perspective{height:clamp(330px,45vw,525px);position:relative;transform-style:preserve-3d;will-change:auto}
 .case3d-card{position:absolute;left:50%;top:50%;width:min(53vw,845px);aspect-ratio:1200/675;padding:0;overflow:hidden;border:1px solid rgba(67,144,231,.42);border-radius:22px;background:#031d43;box-shadow:0 15px 40px rgba(6,45,94,.13);cursor:pointer;transition:transform .64s cubic-bezier(.2,.75,.2,1),opacity .54s ease,box-shadow .54s ease;backface-visibility:hidden;transform-origin:center;outline-offset:5px}
 .case3d-card img{width:100%;height:100%;object-fit:fill;display:block;pointer-events:none}
+/* Split the existing 3D card internally, without changing its outer dimensions. */
+.case3d-card{display:grid;grid-template-columns:52% 48%;text-align:left;background:#fff;color:#0b2b58;font-family:inherit}
+.case3d-card-copy{display:flex;flex-direction:column;min-width:0;height:100%;box-sizing:border-box;padding:clamp(12px,1.55vw,25px);gap:clamp(8px,.8vw,13px);overflow:hidden}
+.case3d-card-tags{display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:clamp(9px,.68vw,12px);font-weight:700;white-space:nowrap}
+.case3d-card-tag{color:#1466ba;background:#e9f3ff;border-radius:999px;padding:7px 10px}
+.case3d-card-category{color:#704419;background:#fff0db;border-radius:999px;padding:7px 10px;overflow:hidden;text-overflow:ellipsis}
+.case3d-card-heading{display:block;font-size:clamp(17px,1.45vw,25px);font-weight:750;letter-spacing:-.045em;line-height:1.12;color:#082951;margin-top:4px}
+.case3d-card-lede{display:block;font-size:clamp(10px,.76vw,13px);line-height:1.48;color:#5a708c}
+.case3d-card-point{display:grid;grid-template-columns:26px 1fr;gap:9px;align-items:start;font-size:clamp(10px,.73vw,12px);line-height:1.38;color:#56708f;margin-top:2px}
+.case3d-card-icon{display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:#e6f2ff;color:#1474cf;font-size:17px}
+.case3d-card-point strong,.case3d-card-impact strong{display:block;color:#0b3265;font-size:clamp(11px,.82vw,14px);margin-bottom:3px}
+.case3d-card-point span span{display:block}
+.case3d-card-impact{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-radius:12px;background:#eff5fd;font-size:clamp(9px,.69vw,12px);line-height:1.3;color:#234a77;margin-top:auto}
+.case3d-card-visual{position:relative;display:block;overflow:hidden;min-width:0;height:100%;background:#082e61}
+.case3d-card .case3d-card-visual img{position:absolute;top:0;left:-108.333%;width:208.333%;max-width:none;height:100%;object-fit:fill;display:block}
+/* Homepage-style hierarchy: evenly paced intro, challenge, solution and impact. */
+.case3d-card-copy{padding:clamp(15px,1.65vw,27px);gap:clamp(9px,.9vw,14px);justify-content:flex-start}
+.case3d-card-heading{margin-top:2px;line-height:1.16}
+.case3d-card-lede{line-height:1.45}
+.case3d-card-story{display:flex;flex-direction:column;gap:clamp(9px,.9vw,14px);margin-top:2px}
+.case3d-card-point{margin:0;grid-template-columns:29px minmax(0,1fr);gap:10px;line-height:1.38}
+.case3d-card-icon{width:28px;height:28px;font-size:17px;flex:none}
+.case3d-card-point strong{margin-bottom:3px}
+.case3d-card-impact-row{display:grid;grid-template-columns:29px minmax(0,1fr);gap:10px;align-items:start;margin-top:2px}
+.case3d-card-impact{margin:0;width:100%;box-sizing:border-box;gap:4px;padding:10px 12px}
+/* Use the whole white half: equal breathing room between the five content
+   groups, with Impact aligned to the same bottom inset as the top badges. */
+@media(min-width:901px){
+  .case3d-card-copy{justify-content:space-between;gap:7px}
+  .case3d-card-story{gap:clamp(10px,1vw,16px)}
+  .case3d-card-impact-row{margin-top:0}
+}
 .case3d-card[data-distance="0"]{box-shadow:0 24px 65px rgba(12,98,183,.3),0 0 0 2px #75bcff;cursor:default}
 .case3d-card:focus-visible{outline:3px solid #167fff}
 .case3d-card[data-distance="1"],.case3d-card[data-distance="-1"]{filter:none}
@@ -39,7 +71,11 @@
 .case3d-impact li{list-style:none;margin-top:.55rem;font-size:.83rem;line-height:1.5;color:#183a65;position:relative;padding-left:1.2rem}
 .case3d-impact li::before{content:"✓";position:absolute;left:0;color:#0877d1;font-weight:900}
 @media(max-width:900px){.case3d-card{width:min(69vw,700px)}.case3d-perspective{height:clamp(270px,53vw,440px)}.case3d-detail{margin:0 1rem}.case3d-section{padding-bottom:3.5rem}}
+@media(max-width:900px){.case3d-card-copy{padding:13px;gap:7px}.case3d-card-tags{font-size:9px}.case3d-card-tag,.case3d-card-category{padding:5px 7px}.case3d-card-heading{font-size:clamp(14px,2.3vw,20px)}.case3d-card-lede{font-size:10px;line-height:1.35}.case3d-card-point{font-size:9px;line-height:1.3;grid-template-columns:20px 1fr;gap:5px}.case3d-card-icon{width:20px;height:20px;font-size:13px}.case3d-card-point strong,.case3d-card-impact strong{font-size:10px}.case3d-card-impact{font-size:9px;padding:7px;gap:2px}}
+@media(max-width:900px){.case3d-card-story{gap:7px;margin-top:0}.case3d-card-point,.case3d-card-impact-row{grid-template-columns:20px minmax(0,1fr);gap:6px}.case3d-card-impact-row{margin-top:0}.case3d-card-impact{width:100%}}
 @media(max-width:600px){.case3d-stage{overflow:hidden}.case3d-card{width:82vw;border-radius:13px}.case3d-perspective{height:55vw;min-height:240px}.case3d-section{padding-top:2.3rem}.case3d-intro{margin-bottom:1.3rem}.case3d-dot{min-width:27px;width:27px;height:27px;font-size:.66rem}.case3d-controls{gap:.48rem}.case3d-arrow{width:34px;height:34px;font-size:1.2rem}.case3d-detail{display:block;padding:1.2rem;margin:0 1rem}.case3d-impact{border-left:0;border-top:1px solid #dce9f8;margin-top:1rem;padding:1rem 0 0}.case-studies-page .case3d-hero{padding-top:7.5rem}}
+@media(max-width:600px){.case3d-card{grid-template-columns:55% 45%}.case3d-card-copy{padding:9px;gap:5px}.case3d-card-tags{font-size:7px}.case3d-card-tag,.case3d-card-category{padding:4px 5px}.case3d-card-heading{font-size:clamp(12px,3.3vw,17px);margin-top:0}.case3d-card-lede{font-size:8px;line-height:1.22}.case3d-card-point{font-size:8px;line-height:1.2;grid-template-columns:14px 1fr;gap:4px;margin-top:0}.case3d-card-icon{width:14px;height:14px;font-size:9px}.case3d-card-point strong,.case3d-card-impact strong{font-size:8px;margin-bottom:1px}.case3d-card-impact{font-size:7px;line-height:1.16;gap:1px;padding:5px;border-radius:6px}.case3d-card .case3d-card-visual img{left:-122.222%;width:222.222%}}
+@media(max-width:600px){.case3d-card-story{gap:4px}.case3d-card-point,.case3d-card-impact-row{grid-template-columns:14px minmax(0,1fr);gap:4px}.case3d-card-impact{padding:4px;width:100%}.case3d-card-copy{gap:4px}.case3d-card-lede{line-height:1.18}}
 @media(prefers-reduced-motion:reduce){.case3d-card{transition:none}.case3d-arrow{transition:none}}
 
 /* Performance-only: off-screen cards never capture clicks; preserve all layout sizes. */

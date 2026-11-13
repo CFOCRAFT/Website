@@ -6595,3 +6595,39 @@ h6,
 .home-page #services.cfo-story .cfo-story-segment:not(.is-active) .cfo-story-segment-label {
   color: var(--dark-blue) !important;
 }
+
+/* Industries: only the moving active pill uses the hero navigation navy.
+   The four-tab outer bar stays light; Services' six-tab bar is untouched. */
+.home-page #industries.cfo-industry-shaped .cfo-story-nav {
+  background: #f3f7fc !important;
+  border-color: #e3ebf5 !important;
+  box-shadow: none;
+}
+.home-page #industries.cfo-industry-shaped .cfo-story-progress::before {
+  background: linear-gradient(110deg, #071321 0%, #0e2743 100%) !important;
+  border-color: rgba(166, 203, 247, .42) !important;
+  box-shadow: 0 4px 12px rgba(6, 21, 40, .14) !important;
+}
+.home-page #industries.cfo-industry-shaped .cfo-story-segment:not(.is-active) .cfo-story-segment-label {
+  color: #082951 !important;
+}
+.home-page #industries.cfo-industry-shaped .cfo-story-segment.is-active .cfo-story-segment-label {
+  color: #f3f7fc !important;
+}
+
+/* Services: same selected-only navy pill as Industries, across all six tabs. */
+.home-page #services.cfo-story .cfo-story-nav {
+  background: #f3f7fc !important;
+  border-color: #e3ebf5 !important;
+}
+.home-page #services.cfo-story .cfo-story-progress::before {
+  background: linear-gradient(110deg, #071321 0%, #0e2743 100%) !important;
+  border-color: rgba(166, 203, 247, .42) !important;
+  box-shadow: 0 4px 12px rgba(6, 21, 40, .14) !important;
+}
+.home-page #services.cfo-story .cfo-story-segment:not(.is-active) .cfo-story-segment-label {
+  color: #082951 !important;
+}
+.home-page #services.cfo-story .cfo-story-segment.is-active .cfo-story-segment-label {
+  color: #f3f7fc !important;
+}

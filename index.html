@@ -2043,7 +2043,7 @@
           </div>
         </div>
       </section>
-      <section class="section-how" id="how-it-works" data-content-paced-timeline>
+      <section class="section-how how-kinetic-section" id="how-it-works" data-kinetic-track>
         <div class="container how-journey-container">
           <div class="section-header how-journey-header">
             <h6 class="pre-title">How It Works</h6>
@@ -2055,133 +2055,24 @@
             </p>
           </div>
 
-          <div class="how-journey" data-how-journey style="--how-progress: 0">
-            <div class="how-journey-stage">
-              <svg
-                class="how-journey-svg"
-                aria-hidden="true"
-                viewBox="0 0 1200 140"
-                preserveAspectRatio="xMidYMid meet"
-              >
-                <defs>
-                  <linearGradient
-                    id="howProgressGradient"
-                    x1="0"
-                    x2="1"
-                    y1="0"
-                    y2="0"
-                  >
-                    <stop offset="0%" stop-color="#A6CBF7"></stop>
-                    <stop offset="72%" stop-color="#92BFEA"></stop>
-                    <stop offset="100%" stop-color="#A6CBF7"></stop>
-                  </linearGradient>
-                </defs>
-
-                <path
-                  class="how-track-base"
-                  d="M150 70 C295 70 320 35 450 70 S625 105 750 70 S935 35 1050 70"
-                  pathLength="100"
-                ></path>
-                <path
-                  class="how-track-progress"
-                  data-how-progress-path
-                  d="M150 70 C295 70 320 35 450 70 S625 105 750 70 S935 35 1050 70"
-                  pathLength="100"
-                ></path>
-
-                <circle
-                  class="how-scroll-traveller"
-                  data-how-traveller
-                  cx="150"
-                  cy="70"
-                  r="6"
-                ></circle>
-
-                <g
-                  class="how-svg-node"
-                  data-node-index="0"
-                  transform="translate(150 70)"
-                >
-                  <circle class="how-node-halo" r="31"></circle>
-                  <circle class="how-node-core" r="23"></circle>
-                  <text text-anchor="middle" y="5">01</text>
-                </g>
-                <g
-                  class="how-svg-node"
-                  data-node-index="1"
-                  transform="translate(450 70)"
-                >
-                  <circle class="how-node-halo" r="31"></circle>
-                  <circle class="how-node-core" r="23"></circle>
-                  <text text-anchor="middle" y="5">02</text>
-                </g>
-                <g
-                  class="how-svg-node"
-                  data-node-index="2"
-                  transform="translate(750 70)"
-                >
-                  <circle class="how-node-halo" r="31"></circle>
-                  <circle class="how-node-core" r="23"></circle>
-                  <text text-anchor="middle" y="5">03</text>
-                </g>
-                <g
-                  class="how-svg-node"
-                  data-node-index="3"
-                  transform="translate(1050 70)"
-                >
-                  <circle class="how-node-halo" r="31"></circle>
-                  <circle class="how-node-core" r="23"></circle>
-                  <text text-anchor="middle" y="5">04</text>
-                </g>
-              </svg>
-
-              <article
-                class="how-step how-step-journey how-step-01"
-                data-step-index="0"
-              >
-                <h3 class="step-title">Diagnose</h3>
-                <p class="step-desc">
-                  A Finance Diagnostic: a deep look at your books, cash, margins
-                  and compliance. An honest picture of where you stand &mdash;
-                  before any long-term commitment.
-                </p>
-              </article>
-
-              <article
-                class="how-step how-step-journey how-step-02"
-                data-step-index="1"
-              >
-                <h3 class="step-title">Design</h3>
-                <p class="step-desc">
-                  We build your finance operating system: the MIS format,
-                  reporting calendar, controls and cash rhythm &mdash; tailored
-                  to your business, not a template.
-                </p>
-              </article>
-
-              <article
-                class="how-step how-step-journey how-step-03"
-                data-step-index="2"
-              >
-                <h3 class="step-title">Run</h3>
-                <p class="step-desc">
-                  We own the monthly rhythm &mdash; close, MIS, cash flow,
-                  compliance &mdash; delivered on the same date every month, so
-                  you always work from fresh numbers.
-                </p>
-              </article>
-
-              <article
-                class="how-step how-step-journey how-step-04"
-                data-step-index="3"
-              >
-                <h3 class="step-title">Advise</h3>
-                <p class="step-desc">
-                  Every month you sit down with your CFO to look forward &mdash;
-                  pricing, hiring, capex, funding. This is where reporting turns
-                  into results.
-                </p>
-              </article>
+          <div class="cfo-kinetic" aria-label="Explore CFO CRAFT's four-step approach">
+            <div class="cfo-kinetic-track" role="group" aria-label="Our four phases">
+              <div class="cfo-kinetic-line" aria-hidden="true"></div>
+              <div class="cfo-kinetic-fill" aria-hidden="true" data-kinetic-fill></div>
+              <button type="button" class="cfo-kinetic-stop is-active" data-kinetic-step="0" aria-pressed="true"><span class="cfo-kinetic-circle">01</span><span class="cfo-kinetic-name">Diagnose</span><span class="cfo-kinetic-sub">UNDERSTAND</span></button>
+              <button type="button" class="cfo-kinetic-stop" data-kinetic-step="1" aria-pressed="false"><span class="cfo-kinetic-circle">02</span><span class="cfo-kinetic-name">Design</span><span class="cfo-kinetic-sub">STRUCTURE</span></button>
+              <button type="button" class="cfo-kinetic-stop" data-kinetic-step="2" aria-pressed="false"><span class="cfo-kinetic-circle">03</span><span class="cfo-kinetic-name">Run</span><span class="cfo-kinetic-sub">DELIVER</span></button>
+              <button type="button" class="cfo-kinetic-stop" data-kinetic-step="3" aria-pressed="false"><span class="cfo-kinetic-circle">04</span><span class="cfo-kinetic-name">Advise</span><span class="cfo-kinetic-sub">MOVE FORWARD</span></button>
+            </div>
+            <article class="cfo-kinetic-detail" aria-live="polite" aria-atomic="true">
+              <div class="cfo-kinetic-number" data-kinetic-number aria-hidden="true">01</div>
+              <p class="cfo-kinetic-copy" data-kinetic-copy>A Finance Diagnostic: a deep look at your books, cash, margins and compliance. An honest picture of where you stand — before any long-term commitment.</p>
+            </article>
+            <div class="cfo-kinetic-controls">
+              <button type="button" data-kinetic-prev>← Back</button>
+              <button type="button" data-kinetic-next>Next →</button>
+              <button type="button" data-kinetic-play aria-pressed="false">▶ Auto preview</button>
+              <span>SELECT • ADVANCE • AUTO PLAY</span>
             </div>
           </div>
         </div>

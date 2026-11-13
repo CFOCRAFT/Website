@@ -307,6 +307,67 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("load", measure, { once: true });
   })();
 
+  // ===== HOW IT WORKS — KINETIC TRACK (click, keyboard, optional autoplay) =====
+  (() => {
+    const root = document.querySelector("[data-kinetic-track]");
+    if (!root) return;
+    const stops = [...root.querySelectorAll("[data-kinetic-step]")];
+    const fill = root.querySelector("[data-kinetic-fill]");
+    const number = root.querySelector("[data-kinetic-number]");
+    const copy = root.querySelector("[data-kinetic-copy]");
+    const previous = root.querySelector("[data-kinetic-prev]");
+    const next = root.querySelector("[data-kinetic-next]");
+    const play = root.querySelector("[data-kinetic-play]");
+    if (stops.length !== 4 || !fill || !number || !copy || !previous || !next || !play) return;
+
+    const descriptions = [
+      "A Finance Diagnostic: a deep look at your books, cash, margins and compliance. An honest picture of where you stand — before any long-term commitment.",
+      "We build your finance operating system: the MIS format, reporting calendar, controls and cash rhythm — tailored to your business, not a template.",
+      "We own the monthly rhythm — close, MIS, cash flow, compliance — delivered on the same date every month, so you always work from fresh numbers.",
+      "Every month you sit down with your CFO to look forward — pricing, hiring, capex, funding. This is where reporting turns into results.",
+    ];
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let active = 0;
+    let timer = null;
+    const stopAuto = () => {
+      if (timer !== null) clearInterval(timer);
+      timer = null;
+      play.textContent = "▶ Auto preview";
+      play.setAttribute("aria-pressed", "false");
+    };
+    const show = (value) => {
+      active = (value + stops.length) % stops.length;
+      stops.forEach((button, index) => {
+        const selected = index === active;
+        button.classList.toggle("is-active", selected);
+        button.setAttribute("aria-pressed", String(selected));
+      });
+      number.textContent = String(active + 1).padStart(2, "0");
+      copy.textContent = descriptions[active];
+      // The fill is measured BETWEEN first/last node centres: never past the selected node.
+      // Four equal columns place node centres at 12.5%, 37.5%, 62.5%, 87.5%.
+      // The visible track spans 75% of the row, so each step advances 25%.
+      fill.style.width = `${(active / (stops.length - 1)) * 75}%`;
+    };
+    stops.forEach((button, index) => button.addEventListener("click", () => {
+      stopAuto();
+      show(index);
+    }));
+    previous.addEventListener("click", () => { stopAuto(); show(active - 1); });
+    next.addEventListener("click", () => { stopAuto(); show(active + 1); });
+    play.addEventListener("click", () => {
+      if (timer !== null) return stopAuto();
+      show(active + 1);
+      if (reducedMotion.matches) return;
+      timer = window.setInterval(() => show(active + 1), 2300);
+      play.textContent = "Ⅱ Pause preview";
+      play.setAttribute("aria-pressed", "true");
+    });
+    document.addEventListener("visibilitychange", () => { if (document.hidden) stopAuto(); });
+    reducedMotion.addEventListener?.("change", () => { if (reducedMotion.matches) stopAuto(); });
+    show(0);
+  })();
+
   // ===== CASE STUDIES — 9-STEP PREMIUM PINNED SHOWCASE =====
   (() => {
     const section = document.querySelector("[data-csx-scroll]");

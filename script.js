@@ -76,6 +76,57 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // ===== Homepage promoter FAQs — visible-only 5s preview, 12s manual hold =====
+  (() => {
+    const section = document.querySelector("#faq.section-faq");
+    if (!section) return;
+    const items = [...section.querySelectorAll(".faq-list > details")];
+    if (items.length < 2) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let visible = false;
+    let timer = null;
+    let current = items.findIndex((item) => item.open);
+    const stop = () => { window.clearTimeout(timer); timer = null; };
+    const show = (index) => {
+      current = (index + items.length) % items.length;
+      items.forEach((item, i) => { item.open = i === current; });
+    };
+    const schedule = (delay = 5000) => {
+      stop();
+      if (!visible || document.hidden || reduced.matches) return;
+      timer = window.setTimeout(() => {
+        if (!visible || document.hidden || reduced.matches) return;
+        show(current + 1);
+        schedule(5000);
+      }, delay);
+    };
+    items.forEach((item, index) => {
+      item.querySelector("summary")?.addEventListener("click", () => {
+        // Let the browser toggle <details> natively, then synchronize the rest.
+        window.setTimeout(() => {
+          if (item.open) {
+            current = index;
+            items.forEach((other) => { if (other !== item) other.open = false; });
+          } else current = index;
+          schedule(12000);
+        }, 0);
+      });
+    });
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver((entries) => {
+        visible = Boolean(entries[0]?.isIntersecting);
+        if (visible) { if (current < 0) show(0); schedule(); }
+        else stop();
+      }, { threshold: 0.3 }).observe(section);
+    } else { visible = true; if (current < 0) show(0); schedule(); }
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) stop(); else schedule();
+    });
+    reduced.addEventListener?.("change", () => {
+      if (reduced.matches) stop(); else schedule();
+    });
+  })();
+
   // ===== Counter Animation =====
   const counterObserver = new IntersectionObserver(
     (entries) => {
@@ -399,6 +450,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const next = section.querySelector("[data-csx-next]");
     const pinned = section.querySelector(".csx-sticky");
     const isDesktop = () => window.matchMedia("(min-width:769px)").matches;
+    const autoMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let autoVisible = false;
+    let autoTimer = null;
+    const stopAuto = () => { window.clearTimeout(autoTimer); autoTimer = null; };
+    const scheduleAuto = (delay = 5000) => {
+      stopAuto();
+      if (!autoVisible || document.hidden || autoMotion.matches) return;
+      autoTimer = window.setTimeout(() => {
+        if (!autoVisible || document.hidden || autoMotion.matches) return;
+        // Auto-preview changes the displayed slide only. It never scrolls the page.
+        display((active + 1) % panels.length);
+        scheduleAuto(5000);
+      }, delay);
+    };
+    const manualNavigate = (index) => { navigate(index); scheduleAuto(12000); };
     let active = -1,
       raf = 0;
     const clamp = (n) => Math.max(0, Math.min(panels.length - 1, n));
@@ -474,11 +540,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     };
     steps.forEach((step, i) =>
-      step.addEventListener("click", () => navigate(i)),
+      step.addEventListener("click", () => manualNavigate(i)),
     );
-    dots.forEach((dot, i) => dot.addEventListener("click", () => navigate(i)));
-    prev?.addEventListener("click", () => navigate(active - 1));
-    next?.addEventListener("click", () => navigate(active + 1));
+    dots.forEach((dot, i) => dot.addEventListener("click", () => manualNavigate(i)));
+    prev?.addEventListener("click", () => manualNavigate(active - 1));
+    next?.addEventListener("click", () => manualNavigate(active + 1));
     window.addEventListener("scroll", request, { passive: true });
     window.addEventListener(
       "resize",
@@ -492,11 +558,11 @@ document.addEventListener("DOMContentLoaded", () => {
       pinned.addEventListener("keydown", (e) => {
         if (e.key === "ArrowRight") {
           e.preventDefault();
-          navigate(active + 1);
+          manualNavigate(active + 1);
         }
         if (e.key === "ArrowLeft") {
           e.preventDefault();
-          navigate(active - 1);
+          manualNavigate(active - 1);
         }
       });
     // Mobile swipe over the illustration or copy.
@@ -519,13 +585,26 @@ document.addEventListener("DOMContentLoaded", () => {
         if (touchX === null || isDesktop()) return;
         const diff = e.changedTouches[0].clientX - touchX;
         touchX = null;
-        if (Math.abs(diff) > 55) navigate(active + (diff < 0 ? 1 : -1));
+        if (Math.abs(diff) > 55) manualNavigate(active + (diff < 0 ? 1 : -1));
       },
       { passive: true },
     );
     size();
     display(0);
     sync();
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver((entries) => {
+        autoVisible = Boolean(entries[0]?.isIntersecting);
+        if (autoVisible) scheduleAuto();
+        else stopAuto();
+      }, { threshold: 0.25 }).observe(pinned || section);
+    } else { autoVisible = true; scheduleAuto(); }
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) stopAuto(); else scheduleAuto();
+    });
+    autoMotion.addEventListener?.("change", () => {
+      if (autoMotion.matches) stopAuto(); else scheduleAuto();
+    });
     // Trigger the first entry when the pinned viewport actually appears, not on page reload.
     // Re-entering from either direction also replays the entrance choreography.
     if ("IntersectionObserver" in window) {
@@ -5076,6 +5155,25 @@ if (document.readyState === "loading") {
     let ticking = false;
     let lastWidth = window.innerWidth;
     let lastHeight = window.innerHeight;
+    // Preview each pinned showcase only while its canvas is visible.
+    // Automatic changes don't move the browser's scroll position.
+    const autoTimers = new Map();
+    const visibleStories = new Set();
+    const cancelPreview = (story) => {
+      window.clearTimeout(autoTimers.get(story));
+      autoTimers.delete(story);
+    };
+    const schedulePreview = (story, delay = 5000) => {
+      cancelPreview(story);
+      if (!visibleStories.has(story) || document.hidden || motionPreference.matches) return;
+      const timer = window.setTimeout(() => {
+        if (!visibleStories.has(story) || document.hidden || motionPreference.matches) return;
+        const count = story._cfoPanels?.length || 0;
+        if (count > 1) setStep(story, (Number(story.dataset.storyActive || 0) + 1) % count);
+        schedulePreview(story, 5000);
+      }, delay);
+      autoTimers.set(story, timer);
+    };
 
     function setStep(story, index, force = false) {
       const panels = story._cfoPanels || [];
@@ -5228,6 +5326,7 @@ if (document.readyState === "loading") {
             ),
           );
           setStep(story, index);
+          schedulePreview(story, 12000);
           scrollToStep(
             story,
             index,
@@ -5239,6 +5338,23 @@ if (document.readyState === "loading") {
     measure();
     for (const story of roots) setStep(story, 0, true);
     selectFromScroll();
+    if ("IntersectionObserver" in window) {
+      const previews = new Map(roots.map((story) => [story.querySelector(".cfo-story-pin") || story, story]));
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(({ target, isIntersecting }) => {
+          const story = previews.get(target);
+          if (!story) return;
+          if (isIntersecting) { visibleStories.add(story); schedulePreview(story); }
+          else { visibleStories.delete(story); cancelPreview(story); }
+        });
+      }, { threshold: 0.25 });
+      previews.forEach((story, pin) => observer.observe(pin));
+    } else {
+      roots.forEach((story) => { visibleStories.add(story); schedulePreview(story); });
+    }
+    document.addEventListener("visibilitychange", () => {
+      roots.forEach((story) => document.hidden ? cancelPreview(story) : schedulePreview(story));
+    });
     // The observed element is the pinned viewport, but state belongs to its
     // parent story. Observe both directions; re-arm when it truly leaves.
     if ("IntersectionObserver" in window) {
@@ -5302,6 +5418,7 @@ if (document.readyState === "loading") {
       for (const story of roots)
         setStep(story, Number(story.dataset.storyActive || 0), true);
       scheduleScroll();
+      roots.forEach((story) => schedulePreview(story));
     });
     window.addEventListener("hashchange", honorHash);
     if (window.location.hash) honorHash();

@@ -5739,3 +5739,61 @@ if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", mount, { once: true });
   else mount();
 })();
+
+// Mobile outcome flow — no previous/next controls, only autoplay and six numbers.
+(() => {
+  const mountOutcome = () => {
+    const root = document.querySelector('[data-outcome-flow]');
+    if (!root) return;
+    const data = [
+      ['MIS arrives weeks late — if at all', 'MIS closed and delivered on a fixed date, monthly'],
+      ['Cash is a constant mystery and monthly stress', 'A 13-week cash view and a plan behind it'],
+      ['Profit by product / client is guesswork', 'Margins visible by product, SKU and customer'],
+      ['Compliance handled deadline-to-deadline', 'Compliance run as a system, with a calendar'],
+      ['Big decisions made on gut, not numbers', 'Decisions made on current, reliable numbers'],
+      ['Finance depends entirely on one or two people', 'A documented function that outlasts any one person']
+    ];
+    const before = root.querySelector('[data-outcome-before]');
+    const after = root.querySelector('[data-outcome-after]');
+    const fill = root.querySelector('[data-outcome-fill]');
+    const count = root.querySelector('[data-outcome-count]');
+    const buttons = [...root.querySelectorAll('[data-outcome-index]')];
+    const media = window.matchMedia('(max-width: 767px)');
+    let current = 0, hold = 0, visible = false, timer;
+    const paint = () => {
+      before.textContent = data[current][0];
+      after.textContent = data[current][1];
+      fill.style.width = ((current + 1) / data.length * 100) + '%';
+      count.textContent = String(current + 1).padStart(2, '0') + ' / 06';
+      buttons.forEach((button, i) => button.setAttribute('aria-pressed', String(i === current)));
+    };
+    const schedule = () => {
+      clearTimeout(timer);
+      if (!media.matches || !visible || document.hidden) return;
+      timer = setTimeout(() => {
+        if (Date.now() < hold) { schedule(); return; }
+        current = (current + 1) % data.length;
+        paint();
+        schedule();
+      }, Math.max(5000, hold - Date.now()));
+    };
+    buttons.forEach((button, i) => button.addEventListener('click', () => {
+      current = i;
+      hold = Date.now() + 12000;
+      paint();
+      schedule();
+    }));
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => {
+        visible = entries[0].isIntersecting;
+        schedule();
+      }, { threshold: 0.2 }).observe(root);
+    } else visible = true;
+    if (media.addEventListener) media.addEventListener('change', schedule);
+    document.addEventListener('visibilitychange', schedule);
+    paint();
+    schedule();
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mountOutcome, { once: true });
+  else mountOutcome();
+})();

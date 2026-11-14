@@ -5797,3 +5797,90 @@ if (document.readyState === "loading") {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mountOutcome, { once: true });
   else mountOutcome();
 })();
+
+// Desktop outcome matrix — all six comparison pairs remain visible.
+(() => {
+  const mountMatrix = () => {
+    const root = document.querySelector('[data-outcome-matrix]');
+    if (!root) return;
+    const data = [
+      ['MIS REPORTING', 'MIS arrives weeks late — if at all', 'MIS closed and delivered on a fixed date, monthly'],
+      ['CASH VISIBILITY', 'Cash is a constant mystery and monthly stress', 'A 13-week cash view and a plan behind it'],
+      ['MARGIN INTELLIGENCE', 'Profit by product / client is guesswork', 'Margins visible by product, SKU and customer'],
+      ['COMPLIANCE', 'Compliance handled deadline-to-deadline', 'Compliance run as a system, with a calendar'],
+      ['BETTER DECISIONS', 'Big decisions made on gut, not numbers', 'Decisions made on current, reliable numbers'],
+      ['FINANCE CONTINUITY', 'Finance depends entirely on one or two people', 'A documented function that outlasts any one person'],
+    ];
+    const holder = root.querySelector('[data-matrix-rows]');
+    const counter = root.querySelector('[data-matrix-count]');
+    const fill = root.querySelector('[data-matrix-fill]');
+    const desktop = window.matchMedia('(min-width: 768px)');
+    let selected = 0, holdUntil = 0, isVisible = false, timer;
+
+    data.forEach((pair, index) => {
+      const row = document.createElement('button');
+      row.type = 'button';
+      row.className = 'outcome-matrix-row';
+      row.setAttribute('aria-label', 'Highlight ' + pair[0].toLowerCase());
+      const createSide = (className, copy) => {
+        const side = document.createElement('span');
+        side.className = 'outcome-matrix-item ' + className;
+        const number = document.createElement('span');
+        number.className = 'outcome-matrix-number';
+        number.textContent = String(index + 1).padStart(2, '0');
+        const text = document.createElement('span');
+        text.className = 'outcome-matrix-copy';
+        const title = document.createElement('strong');
+        title.textContent = pair[0];
+        text.append(title, document.createTextNode(copy));
+        side.append(number, text);
+        return side;
+      };
+      const bridge = document.createElement('span');
+      bridge.className = 'outcome-matrix-bridge';
+      bridge.setAttribute('aria-hidden', 'true');
+      const orb = document.createElement('span');
+      orb.className = 'outcome-matrix-orb';
+      bridge.append(orb);
+      row.append(createSide('outcome-matrix-before', pair[1]), bridge, createSide('outcome-matrix-after', pair[2]));
+      row.addEventListener('click', () => {
+        selected = index;
+        holdUntil = Date.now() + 12000;
+        render();
+        schedule();
+      });
+      holder.append(row);
+    });
+    const rows = [...holder.children];
+    const render = () => {
+      rows.forEach((row, index) => {
+        row.classList.toggle('is-active', index === selected);
+        row.setAttribute('aria-pressed', String(index === selected));
+      });
+      counter.textContent = String(selected + 1).padStart(2, '0') + ' / 06';
+      fill.style.width = (100 * (selected + 1) / data.length) + '%';
+    };
+    const schedule = () => {
+      clearTimeout(timer);
+      if (!desktop.matches || !isVisible || document.hidden) return;
+      timer = setTimeout(() => {
+        if (Date.now() < holdUntil) { schedule(); return; }
+        selected = (selected + 1) % data.length;
+        render();
+        schedule();
+      }, Math.max(5000, holdUntil - Date.now()));
+    };
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver((entries) => {
+        isVisible = entries[0].isIntersecting;
+        schedule();
+      }, { threshold: 0.2 }).observe(root);
+    } else isVisible = true;
+    if (desktop.addEventListener) desktop.addEventListener('change', schedule);
+    document.addEventListener('visibilitychange', schedule);
+    render();
+    schedule();
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mountMatrix, { once: true });
+  else mountMatrix();
+})();

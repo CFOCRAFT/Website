@@ -6150,3 +6150,29 @@
     margin: 0 !important;
   }
 }
+
+/* Override the old 90svh clipping rule for the new six-row desktop matrix. */
+@media (min-width: 1025px) {
+  .home-page #outcome.section-outcome {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding-top: 18px !important;
+    padding-bottom: 19px !important;
+  }
+  .home-page #outcome .section-header {
+    margin-top: 0 !important;
+    margin-bottom: 14px !important;
+  }
+  .home-page #outcome .pre-title { margin: 0 0 6px !important; font-size: 15px !important; }
+  .home-page #outcome .section-heading {
+    font-size: clamp(31px,2.8vw,43px) !important;
+    line-height: 1.12 !important;
+    margin: 0 !important;
+  }
+  .home-page #outcome .outcome-footer-text {
+    margin-top: 13px !important;
+    font-size: 14px !important;
+  }
+}

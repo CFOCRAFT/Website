@@ -5952,8 +5952,12 @@ if (document.readyState === "loading") {
     let active = 0;
     let timer = null;
     let holdUntil = 0;
-    let inView = true;
+    let inView = false;
     const mobile = window.matchMedia('(max-width: 700px)');
+    const desktopScroll = window.matchMedia('(min-width: 1100px) and (min-height: 760px)');
+    const configureScroll = () => root.classList.toggle('why-scroll-ready', desktopScroll.matches);
+    configureScroll();
+    desktopScroll.addEventListener?.('change', configureScroll);
     const render = (scrollTab = false) => {
       const item = data[active];
       shell.querySelector('[data-why-title]').textContent = item.title;
@@ -5962,6 +5966,10 @@ if (document.readyState === "loading") {
       shell.querySelector('[data-why-output]').textContent = item.output;
       shell.querySelector('[data-why-explanation]').textContent = item.explanation;
       [...rail.children].forEach((button, index) => button.setAttribute('aria-pressed', String(index === active)));
+      shell.classList.remove('why-bp-changing');
+      // Restart the short content transition when the active capability changes.
+      void shell.offsetWidth;
+      shell.classList.add('why-bp-changing');
       if (mobile.matches && scrollTab) {
         const button = rail.children[active];
         const left = button.offsetLeft - (rail.clientWidth - button.offsetWidth) / 2;
@@ -5979,16 +5987,215 @@ if (document.readyState === "loading") {
         schedule();
       }, delay);
     };
+    let pendingScrollFrame = false;
+    const syncScroll = () => {
+      if (!desktopScroll.matches || Date.now() < holdUntil) return;
+      const rect = root.getBoundingClientRect();
+      const stickyTop = 110;
+      const travel = Math.max(1, rect.height - (window.innerHeight - stickyTop));
+      const progress = Math.max(0, Math.min(.9999, (stickyTop - rect.top) / travel));
+      if (rect.bottom < stickyTop || rect.top > window.innerHeight) return;
+      const next = Math.min(data.length - 1, Math.floor(progress * data.length));
+      if (next !== active) { active = next; render(false); schedule(); }
+    };
+    window.addEventListener('scroll', () => {
+      if (pendingScrollFrame) return;
+      pendingScrollFrame = true;
+      requestAnimationFrame(() => { pendingScrollFrame = false; syncScroll(); });
+    }, {passive: true});
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(entries => {
         inView = entries[0].isIntersecting;
+        if (inView) syncScroll();
         schedule();
       }, {threshold: 0.2}).observe(shell);
-    }
+    } else inView = true;
     document.addEventListener('visibilitychange', schedule);
     render();
     schedule();
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mountWhyBlueprint, {once: true});
   else mountWhyBlueprint();
+})();
+
+/* Approved CFO CRAFT sections: compact Impact Command Center and founder story. */
+(() => {
+  const mountApprovedSections = () => {
+    const metrics = document.querySelector('#metrics.section-metrics');
+    if (metrics && !metrics.classList.contains('cw-metrics-ready')) {
+      metrics.classList.add('cw-metrics-ready');
+      metrics.innerHTML = `<div class="container"><div class="cw-impact">
+        <div class="cw-impact-heading"><span class="cw-kicker">BUSINESS IMPACT · CFO CRAFT</span><span class="cw-live">MEASURABLE OUTCOMES</span></div>
+        <h2>Your business deserves to save both time and money.</h2>
+        <p class="cw-impact-intro">Let us handle your financial strategy, so you can focus on growing your business.</p>
+        <div class="cw-impact-cards">
+          <article class="cw-impact-card"><div class="cw-impact-card-head"><span>WORKING CAPITAL</span><b>₹</b></div><strong>₹3 Cr+</strong><p>Average working capital unlocked per client</p><div class="cw-impact-track"><i></i></div><div class="cw-impact-foot">CASH FREED <span>FINANCIAL FLEXIBILITY ↗</span></div></article>
+          <article class="cw-impact-card"><div class="cw-impact-card-head"><span>CASH CONVERSION</span><b>↘</b></div><strong>40%</strong><p>Average reduction in cash conversion cycle</p><div class="cw-impact-track"><i></i></div><div class="cw-impact-foot">FASTER CASH CYCLE <span>BETTER LIQUIDITY ↗</span></div></article>
+          <article class="cw-impact-card"><div class="cw-impact-card-head"><span>PROMOTER TIME</span><b>◷</b></div><strong>60 hours</strong><p>Of promoter time saved per month on finance operations</p><div class="cw-impact-track"><i></i></div><div class="cw-impact-foot">TIME RETURNED <span>FOCUS ON GROWTH ↗</span></div></article>
+        </div>
+      </div></div>`;
+      const cards = [...metrics.querySelectorAll('.cw-impact-card')];
+      let running = false;
+      let index = 0;
+      let timer;
+      const activate = () => {
+        cards.forEach((card, i) => card.classList.toggle('cw-active', i === index));
+        index = (index + 1) % cards.length;
+      };
+      const start = () => {
+        clearInterval(timer);
+        if (!running || document.hidden || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        activate();
+        timer = setInterval(activate, 5000);
+      };
+      if ('IntersectionObserver' in window) new IntersectionObserver(entries => {
+        running = entries[0].isIntersecting;
+        if (running) metrics.classList.add('cw-visible');
+        start();
+      }, {threshold: .16}).observe(metrics);
+      else {running = true;metrics.classList.add('cw-visible');start();}
+      document.addEventListener('visibilitychange', start);
+    }
+
+    const story = document.querySelector('#story.section-story');
+    if (!story || story.classList.contains('cw-story-ready')) return;
+    const chapters = [
+      {name:'The Challenge',sub:'Why change matters',eyebrow:'CHAPTER 01 · THE OPPORTUNITY',title:'For businesses built on ambition, finance needs to keep up.',a:"India's growing manufacturing and trading businesses are full of ambition and expertise — but most run their finances on instinct and outdated reports long after that stops being safe.",b:'Money is lost quietly: cash stuck in the cycle, products sold below cost, and decisions made without the numbers to back them.',q:'Finance should help you decide, not just report.',from:'LATE REPORTING',to:'DECISION CLARITY',why:'Timely, reliable financial information turns uncertainty into better decisions.',phase:'PROBLEM → CLARITY'},
+      {name:'The Vision',sub:'Senior finance leadership',eyebrow:'CHAPTER 02 · THE VISION',title:'Big-firm leadership. Practical for growing businesses.',a:'We started CFO Craft in 2022 to give these businesses financial leadership usually reserved for large companies — senior, strategic and hands-on.',b:'Our focus is on growing businesses, delivering insight and accountability at a size and price that makes sense.',q:'Focus beats breadth — we go deep in the sectors we know.',from:'CFO EXPERIENCE',to:'PRACTICAL ADVICE',why:'Focused financial leadership connects business challenges to relevant action.',phase:'EXPERIENCE → ACTION'},
+      {name:'The Foundation',sub:'Systems that last',eyebrow:'CHAPTER 03 · THE FOUNDATION',title:'A finance function built to outlast individuals.',a:'We build SOPs, financial controls, dependable reporting processes and an operating rhythm that works beyond any single person.',b:'Our approach strengthens the business as it grows, from working-capital discipline to trustworthy financial visibility.',q:'Systems outlast people — we build finance functions that last.',from:'DOCUMENTED SYSTEMS',to:'RELIABLE OPERATIONS',why:'Sound processes create consistency and reduce dependence on any one person.',phase:'STRUCTURE → STRENGTH'},
+      {name:'The Partnership',sub:'Straight talk and trust',eyebrow:'CHAPTER 04 · THE PARTNERSHIP',title:'Judgement and ownership at the promoter’s table.',a:'Sudhir Gawandi, a Chartered Accountant, has 25+ years across manufacturing, trading, professional services and technology, including CFO and business leadership positions.',b:'He has led FP&A, financial reporting and compliance, ERP implementations and M&A due diligence and integration. CFO Craft works closely with founders, promoters and MDs to guide the decisions shaping their businesses.',q:'Straight talk earns trust — we tell promoters what they need to hear.',from:'HONEST PERSPECTIVE',to:'LASTING CONFIDENCE',why:'Experienced, independent counsel helps business leaders act with confidence.',phase:'TRUST → IMPACT'}
+    ];
+    story.classList.add('cw-story-ready');
+    story.innerHTML = `<div class="container"><div class="cw-story-board">
+      <div class="cw-story-top"><span>OUR STORY · THE THINKING BEHIND CFO CRAFT</span><span>✦ FOUNDED IN 2022</span></div>
+      <h2>Built by a CFO who's sat where you sit.</h2>
+      <div class="cw-story-grid">
+        <article class="cw-story-editorial" aria-live="polite"><div><span class="cw-story-chapter" data-cw-chapter></span><h3 data-cw-title></h3><p data-cw-first></p><p data-cw-second></p></div><blockquote data-cw-quote></blockquote></article>
+        <div class="cw-story-right"><div class="cw-story-blueprint"><div class="cw-story-bp-head"><span>FINANCE FUNCTION BLUEPRINT</span><span data-cw-phase></span></div><div class="cw-story-flow"><div class="cw-story-node"><small>WE RECOGNISE</small><strong data-cw-from></strong></div><div class="cw-story-arrow" aria-hidden="true">→</div><div class="cw-story-node"><small>WE ENABLE</small><strong data-cw-to></strong></div></div><p><b>Why it matters:</b> <span data-cw-why></span></p></div>
+        <div class="cw-founder"><img src="./images/sudhirgawandi.png" alt="Sudhir Gawandi, Founder of CFO CRAFT" loading="lazy" width="76" height="76"><div><small>SUDHIR GAWANDI · FOUNDER</small><h3>25+ years of CFO judgement.</h3><p>Chartered Accountant · Manufacturing, trading, services & technology · FP&A, ERP and M&A integration.</p></div></div></div>
+      </div><nav class="cw-story-nav" aria-label="Explore our story"></nav><div class="cw-story-foot"><span>FOCUS · SYSTEMS · STRAIGHT TALK · PARTNERSHIP</span><strong>BUILT FOR THE PROMOTER'S SEAT ↗</strong></div>
+    </div></div>`;
+    const nav = story.querySelector('.cw-story-nav');
+    let active = 0;
+    let holdUntil = 0;
+    let visible = false;
+    let autoTimer;
+    let scrollLock = false;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const pinnedStory = window.matchMedia('(min-width: 1100px) and (min-height: 760px)');
+    const configurePinnedStory = () => story.classList.toggle('cw-story-pinned', pinnedStory.matches);
+    configurePinnedStory();
+    pinnedStory.addEventListener?.('change', configurePinnedStory);
+    const render = (i) => {
+      active = i;
+      const item = chapters[i];
+      const mapping = {'chapter':'eyebrow','title':'title','first':'a','second':'b','from':'from','to':'to','why':'why','phase':'phase'};
+      for (const [name, key] of Object.entries(mapping)) story.querySelector(`[data-cw-${name}]`).textContent = item[key];
+      story.querySelector('[data-cw-quote]').textContent = '“' + item.q + '”';
+      [...nav.children].forEach((button, index) => button.setAttribute('aria-pressed', String(index === i)));
+    };
+    chapters.forEach((c,i) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.innerHTML = '<b></b><span></span>';
+      button.querySelector('b').textContent = c.name;
+      button.querySelector('span').textContent = c.sub;
+      button.addEventListener('click', () => {
+        holdUntil = Date.now() + 12000;
+        scrollLock = true;
+        render(i);
+        schedule();
+      });
+      nav.append(button);
+    });
+    const schedule = () => {
+      clearTimeout(autoTimer);
+      if (!visible || document.hidden || reduced.matches) return;
+      autoTimer = setTimeout(() => {
+        if (Date.now() < holdUntil) {schedule();return;}
+        scrollLock = false;
+        render((active + 1) % chapters.length);
+        schedule();
+      }, Math.max(5000,holdUntil - Date.now()));
+    };
+    render(0);
+    const syncOnScroll = () => {
+      if (!pinnedStory.matches || !visible || Date.now() < holdUntil) return;
+      const box = story.getBoundingClientRect();
+      const stickyTop = 110;
+      if (box.bottom < stickyTop || box.top > innerHeight) return;
+      const travel = Math.max(1, box.height - (innerHeight - stickyTop));
+      const progress = Math.max(0, Math.min(.9999, (stickyTop - box.top) / travel));
+      const selected = Math.min(chapters.length - 1, Math.floor(progress * chapters.length));
+      if (selected !== active) {render(selected);schedule();}
+    };
+    if ('IntersectionObserver' in window) new IntersectionObserver(entries => {
+      visible = entries[0].isIntersecting;
+      if (visible) story.classList.add('cw-visible');
+      if (visible) syncOnScroll();
+      schedule();
+    }, {threshold: .15}).observe(story);
+    else {visible=true;story.classList.add('cw-visible');schedule();}
+    window.addEventListener('scroll', syncOnScroll, {passive:true});
+    document.addEventListener('visibilitychange',schedule);
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',mountApprovedSections,{once:true});
+  else mountApprovedSections();
+})();
+
+/* Gentle homepage section entrances, with native scrolling and accessible fallback. */
+(() => {
+  const mount = () => {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (reduced.matches || !('IntersectionObserver' in window)) return;
+    const groups = [
+      '.hero .hero-title, .hero .hero-subtitle, .hero .hero-email-form',
+      '.section-platform .pre-title, .section-platform .section-heading, .section-platform article',
+      '#why .why-compact-header .pre-title, #why .why-blueprint-shell',
+      '#how-it-works .pre-title, #how-it-works .section-heading',
+      '#outcome .pre-title, #outcome .section-heading, #outcome .outcome-matrix',
+      '#metrics .cw-impact-heading, #metrics .cw-impact h2, #metrics .cw-impact-intro, #metrics .cw-impact-card',
+      '#pricing > .container > .pre-title, #pricing > .container > .section-heading, #pricing .home-pricing-lead, #pricing .home-plan, #pricing .home-plan.featured, #pricing .home-bookend',
+      '#book .section-heading, #book .pre-title',
+      '#story .cw-story-top, #story .cw-story-board > h2, #story .cw-story-editorial, #story .cw-story-blueprint, #story .cw-founder, #story .cw-story-nav',
+      '#faq .section-header > *, #faq .faq-list > details',
+      '#contact .section-header > *, #contact form, #contact .contact-card'
+    ];
+    const seen = new Set();
+    const candidates = [];
+    groups.forEach(query => document.querySelectorAll(query).forEach(element => {
+      if (seen.has(element) || element.matches('.reveal, .revealed') || element.closest('[data-kinetic-track], .csx-scroll-story')) return;
+      seen.add(element);
+      candidates.push(element);
+    }));
+    if (!candidates.length) return;
+    candidates.forEach(element => {
+      const siblings = Array.from(element.parentElement.children).filter(child => seen.has(child));
+      const order = siblings.indexOf(element);
+      element.style.setProperty('--cfo-enter-delay', `${Math.min(Math.max(order, 0), 5) * 65}ms`);
+      element.classList.add('cfo-enter-item');
+    });
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(({target, isIntersecting}) => {
+        if (!isIntersecting) return;
+        target.classList.add('cfo-entered');
+        observer.unobserve(target);
+      });
+    }, {threshold: .07, rootMargin: '0px 0px -4% 0px'});
+    candidates.forEach(element => observer.observe(element));
+    document.documentElement.classList.add('cfo-motion-ready');
+    // Reveal the content already in view on initial load, without a blank flash.
+    candidates.forEach(element => {
+      const box = element.getBoundingClientRect();
+      if (box.top < innerHeight * .94 && box.bottom > 0) element.classList.add('cfo-entered');
+    });
+    reduced.addEventListener?.('change', event => {
+      if (event.matches) {
+        candidates.forEach(element => {element.classList.add('cfo-entered');element.style.animation = 'none';});
+        observer.disconnect();
+      }
+    });
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => requestAnimationFrame(mount), {once:true});
+  else requestAnimationFrame(mount);
 })();

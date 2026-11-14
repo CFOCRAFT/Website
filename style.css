@@ -6560,6 +6560,12 @@ h6,
   outline-offset: 3px;
 }
 
+/* Pricing: keep the original CTA position; center only its inner label. */
+.home-page #pricing .home-plan > a.home-plan-more {
+  justify-content: center;
+  text-align: center;
+}
+
 /* CFO CRAFT — Industry & Services Alignment Fix */
 @media (min-width: 1025px) {
 
@@ -6799,3 +6805,111 @@ h6,
 .why-bp-tab:focus-visible{outline:3px solid #eeba7d;outline-offset:2px}
 @keyframes whyBpGlow{50%{transform:scale(1.07)}}
 @media(prefers-reduced-motion:reduce){.why-bp-arrow{animation:none}.why-bp-tab{transition:none}}
+/* Approved impact dashboard — compact replacement of original metrics, not a full-screen section. */
+.home-page #metrics.cw-metrics-ready{background:linear-gradient(130deg,#04162c,#082951 65%,#104b81);color:#fff;text-align:left;padding:3.6rem 0 3.75rem;min-height:0;height:auto;overflow:visible}
+.cw-impact{position:relative;overflow:hidden;max-width:1180px;margin:auto;padding:0 4px;color:#fff}
+.cw-impact-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;color:#a7d6ff;font-size:11px;font-weight:850;letter-spacing:.13em}
+.cw-live{display:flex;align-items:center;gap:9px;color:#efc18c}
+.cw-live:before{content:'';width:7px;height:7px;border-radius:50%;background:#efc18c;box-shadow:0 0 0 5px #efc18c25}
+.cw-impact h2{font-family:var(--font-heading,Manrope,sans-serif);font-size:clamp(28px,3.1vw,47px);font-weight:500;line-height:1.13;letter-spacing:-.045em;margin:12px 0 8px;color:#fff}
+.cw-impact-intro{color:#c3d8ec;font-size:clamp(13px,1vw,17px);margin:0 0 20px}
+.cw-impact-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.cw-impact-card{position:relative;min-width:0;overflow:hidden;padding:18px 20px 14px;border:1px solid #a7d8ff4c;border-radius:18px;background:linear-gradient(145deg,#ffffff16,#ffffff09);transition:border-color .3s,box-shadow .3s,transform .3s}
+.cw-impact-card:before{content:'';position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,#55b9f6,#eeba7d)}
+.cw-impact-card:nth-child(2):before{background:linear-gradient(90deg,#76c9ff,#6ad6c1)}
+.cw-impact-card:nth-child(3):before{background:linear-gradient(90deg,#eeba7d,#ffe2a8)}
+.cw-impact-card.cw-active{border-color:#a5dafa;box-shadow:0 0 24px #79c6ff26;transform:translateY(-2px)}
+.cw-impact-card-head{display:flex;justify-content:space-between;align-items:center;gap:8px;color:#b0d9fb;font-size:10px;font-weight:850;letter-spacing:.1em}
+.cw-impact-card-head b{font-size:21px;color:#efc18c;font-weight:600}
+.cw-impact-card>strong{display:block;font-size:clamp(32px,4.25vw,62px);line-height:1.1;letter-spacing:-.05em;font-weight:750;color:#fff;margin:11px 0 6px}
+.cw-impact-card>p{font-size:13px;color:#c7dcea;line-height:1.4;margin:0;min-height:38px}
+.cw-impact-track{height:6px;background:#a6d7ff27;border-radius:9px;overflow:hidden;margin:16px 0 9px}
+.cw-impact-track i{display:block;width:0;height:100%;background:linear-gradient(90deg,#56b7ef,#eeba7d);border-radius:9px;transition:width 1.2s ease}
+.cw-visible .cw-impact-card:nth-child(1) .cw-impact-track i{width:78%}
+.cw-visible .cw-impact-card:nth-child(2) .cw-impact-track i{width:64%}
+.cw-visible .cw-impact-card:nth-child(3) .cw-impact-track i{width:86%}
+.cw-impact-foot{display:flex;justify-content:space-between;gap:8px;color:#b6d4ea;font-size:9px;font-weight:800;letter-spacing:.035em}
+.cw-impact-foot span{text-align:right}
+
+/* Approved founder story: editorial × blueprint × cinematic. */
+.home-page #story.cw-story-ready{background:#f5f9fd;padding:3rem 0;height:auto;min-height:0;overflow:visible}
+.cw-story-board{position:relative;overflow:hidden;border-radius:24px;background:linear-gradient(125deg,#05192f,#092e55 64%,#115086);padding:27px 30px;color:white;box-shadow:0 21px 50px #173e6234}
+.cw-story-board:before{content:'';position:absolute;right:-230px;top:-320px;width:630px;height:630px;border-radius:50%;border:1px solid #addaff2e;box-shadow:0 0 0 80px #9bd0ff0a,0 0 0 160px #9bd0ff06;pointer-events:none}
+.cw-story-board>*{position:relative}
+.cw-story-top{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:11px;font-weight:850;letter-spacing:.12em;color:#b4d9f8}
+.cw-story-top span:last-child{color:#efc38d}
+.cw-story-board>h2{font-family:var(--font-heading,Manrope,sans-serif);font-size:clamp(29px,3vw,43px);font-weight:550;line-height:1.15;letter-spacing:-.045em;color:#fff;margin:12px 0 20px}
+.cw-story-grid{display:grid;grid-template-columns:1.04fr .96fr;gap:15px;align-items:stretch}
+.cw-story-editorial{display:flex;flex-direction:column;justify-content:space-between;gap:15px;min-width:0;padding:23px 26px;border:1px solid #a1cfff2d;border-radius:18px;background:#ffffff0b}
+.cw-story-chapter{color:#f0c48c;letter-spacing:.12em;font-size:10px;font-weight:900}
+.cw-story-editorial h3{font-family:var(--font-heading,Manrope,sans-serif);font-size:clamp(22px,2vw,30px);line-height:1.2;letter-spacing:-.035em;font-weight:700;color:white;margin:10px 0 12px}
+.cw-story-editorial p{font-size:14px;line-height:1.6;color:#d7e8f7;margin:0 0 10px}
+.cw-story-editorial blockquote{border-left:3px solid #eeba7d;color:#f4d4b2;font-size:12px;font-weight:700;margin:8px 0 0;padding-left:13px}
+.cw-story-right{min-width:0;display:grid;grid-template-rows:minmax(0,1fr) auto;gap:12px}
+.cw-story-blueprint{padding:17px 19px;border:1px solid #a4d9ff43;border-radius:17px;background-color:#0d4274;background-image:linear-gradient(#c3e6ff13 1px,transparent 1px),linear-gradient(90deg,#c3e6ff13 1px,transparent 1px);background-size:24px 24px}
+.cw-story-bp-head{display:flex;justify-content:space-between;gap:8px;color:#b7dcfa;font-size:10px;font-weight:850;letter-spacing:.08em}
+.cw-story-flow{display:grid;grid-template-columns:minmax(0,1fr) 46px minmax(0,1fr);gap:5px;align-items:center;margin:14px 0 10px}
+.cw-story-node{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:98px;text-align:center;background:#b0d9ff21;clip-path:polygon(23% 4%,77% 4%,100% 50%,77% 96%,23% 96%,0 50%);padding:10px 8px;min-width:0}
+.cw-story-node small{font-size:9px;font-weight:800;color:#b9dcf8}
+.cw-story-node strong{font-size:12px;line-height:1.25;overflow-wrap:anywhere;color:white}
+.cw-story-arrow{width:44px;height:44px;display:grid;place-items:center;justify-self:center;border:3px solid #eefaff;border-radius:50%;background:#bce0ff;color:#125b95;font-size:21px;box-shadow:0 0 0 8px #8bcfff23}
+.cw-story-blueprint p{margin:0;color:#c9e0f2;font-size:11px;line-height:1.45}
+.cw-story-blueprint p b{color:#eec18c}
+.cw-founder{display:grid;grid-template-columns:76px minmax(0,1fr);gap:15px;align-items:center;background:#eef7ff;color:#082e56;border-radius:17px;padding:13px 16px}
+.cw-founder img{display:block;width:76px;height:76px;object-fit:cover;object-position:center top;border-radius:15px;background:linear-gradient(135deg,#b6defd,#5d9dd2)}
+.cw-founder small{font-size:10px;font-weight:850;letter-spacing:.1em;color:#2a75b5}
+.cw-founder h3{font-size:clamp(18px,1.8vw,25px);line-height:1.18;letter-spacing:-.03em;margin:4px 0 5px;font-weight:780}
+.cw-founder p{color:#476c8c;font-size:11px;line-height:1.4;margin:0}
+.cw-story-nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:15px}
+.cw-story-nav button{position:relative;padding:11px 13px;border:1px solid #add4f74b;border-radius:11px;background:#ffffff12;color:#d8e8f7;font-family:inherit;text-align:left;cursor:pointer}
+.cw-story-nav button:before{content:'';position:absolute;left:11px;right:11px;top:0;height:3px;border-radius:3px;background:#82b8e7}
+.cw-story-nav button[aria-pressed=true]{background:#b8dcfb;border-color:#b8dcfb;color:#0b335d}
+.cw-story-nav button[aria-pressed=true]:before{background:#eeba7d}
+.cw-story-nav b{display:block;font-size:12px}.cw-story-nav span{display:block;font-size:10px;opacity:.78;margin-top:3px}
+.cw-story-nav button:focus-visible{outline:3px solid #eeba7d;outline-offset:2px}
+.cw-story-foot{display:flex;justify-content:space-between;gap:10px;margin-top:12px;color:#b2d6f0;font-size:10px;letter-spacing:.06em}
+.cw-story-foot strong{color:#f0c28b}
+@media(prefers-reduced-motion:reduce){.cw-impact-card,.cw-impact-track i{transition:none!important}}
+
+/* Final desktop capability navigation: six equal choices, one clean row. */
+@media (min-width:901px){
+  .home-page #why .why-bp-rail{grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+  .home-page #why .why-bp-tab{min-height:67px;padding:10px 9px;gap:8px;border-radius:13px}
+  .home-page #why .why-bp-tab-icon{width:32px;height:32px;font-size:18px;border-radius:9px}
+  .home-page #why .why-bp-tab-name{font-size:clamp(10px,.85vw,14px);line-height:1.2}
+  .home-page #why .why-bp-tab-copy i{margin-top:5px}
+}
+
+/* Native scroll-driven pin; no wheel interception or forced scrolling. */
+@media (min-width:1100px) and (min-height:760px){
+  .home-page #why.section-why.why-scroll-ready{position:relative!important;height:calc(100vh + 290vh)!important;min-height:0!important;padding:0!important;overflow:visible!important}
+  .home-page #why.why-scroll-ready .why-compact-container{position:sticky;top:110px;max-height:calc(100vh - 116px);padding-top:12px;padding-bottom:12px}
+  .home-page #why.why-scroll-ready .why-blueprint-shell{margin-top:14px}
+  .home-page #why.why-scroll-ready .why-bp-duo{min-height:315px}
+  .home-page #why.why-scroll-ready .why-bp-nav-head{margin-top:12px}
+  /* Four story chapters complete while the board stays in place. */
+  .home-page #story.cw-story-ready.cw-story-pinned{position:relative!important;height:calc(100vh + 230vh)!important;min-height:0!important;padding:0!important;overflow:visible!important}
+  .home-page #story.cw-story-pinned > .container{position:sticky;top:110px;padding-top:14px;padding-bottom:14px}
+}
+@keyframes whyBlueprintContentIn{from{opacity:.42;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+.why-bp-changing .why-bp-story-main,.why-bp-changing .why-bp-node strong,.why-bp-changing .why-bp-explainer{animation:whyBlueprintContentIn .43s cubic-bezier(.2,.8,.2,1) both}
+
+/* Staggered, one-time section entrances; each element settles at its own CSS position. */
+@keyframes cfoUiArrive{from{opacity:0;transform:translate3d(0,17px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+html.cfo-motion-ready .cfo-enter-item:not(.cfo-entered){opacity:0}
+html.cfo-motion-ready .cfo-enter-item.cfo-entered{animation:cfoUiArrive .72s cubic-bezier(.22,1,.36,1) backwards;animation-delay:var(--cfo-enter-delay,0ms)}
+@media(max-width:700px){
+  @keyframes cfoUiArrive{from{opacity:0;transform:translate3d(0,9px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+  html.cfo-motion-ready .cfo-enter-item.cfo-entered{animation-duration:.5s}
+}
+@media(prefers-reduced-motion:reduce){
+  html.cfo-motion-ready .cfo-enter-item{opacity:1!important;animation:none!important;transform:none!important}
+  .why-bp-changing .why-bp-story-main,.why-bp-changing .why-bp-node strong,.why-bp-changing .why-bp-explainer{animation:none!important}
+}
+
+/* Fix the actual sticky blocker. `overflow-x:hidden` on body creates a
+   non-scrolling overflow ancestor, so desktop sticky panels never pin.
+   Clip preserves horizontal cropping without creating a scroll container. */
+@media (min-width:1100px) and (min-height:760px){
+  html:has(body.home-page),body.home-page{overflow-x:clip!important;overflow-y:visible!important}
+}

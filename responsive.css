@@ -1171,7 +1171,7 @@
 
   .home-page #pricing .home-plan-more {
     margin-top: auto !important;
-    padding-top: 0.15rem !important;
+    padding-top: 0.72rem !important;
     font-size: 0.83rem !important;
   }
 
@@ -6207,4 +6207,56 @@
   .why-bp-tab-icon{width:30px;height:30px;border-radius:8px;font-size:17px}
   .why-bp-tab-name{font-size:12px;white-space:nowrap}
   .why-bp-tab-copy i{margin-top:4px;width:18px}
+}
+/* CFO CRAFT approved impact and founder story: responsive without fullscreen heights. */
+@media(max-width:900px){
+  .home-page #metrics.cw-metrics-ready{padding:2.6rem 0!important}
+  .cw-impact-cards{gap:9px}
+  .cw-impact-card{padding:14px 12px}
+  .cw-impact-foot{font-size:8px}
+  .cw-story-grid{grid-template-columns:1fr}
+  .cw-story-editorial{min-height:280px}
+  .cw-story-right{grid-template-columns:1fr;grid-template-rows:auto auto}
+  .cw-story-blueprint{min-height:210px}
+}
+@media(max-width:700px){
+  .home-page #metrics.cw-metrics-ready{padding:2rem 0!important;min-height:0!important;height:auto!important}
+  .cw-impact{padding:0 2px}
+  .cw-impact-heading{font-size:9px;gap:7px}
+  .cw-live{font-size:8px}
+  .cw-impact h2{font-size:clamp(26px,7vw,35px);line-height:1.13;margin:12px 0 8px}
+  .cw-impact-intro{font-size:12px;margin:0 0 15px}
+  .cw-impact-cards{grid-template-columns:1fr;gap:10px}
+  .cw-impact-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 12px;padding:11px 13px;border-radius:14px}
+  .cw-impact-card-head{grid-column:1;font-size:9px}
+  .cw-impact-card>strong{grid-column:2;grid-row:1/span 2;align-self:center;font-size:clamp(28px,7vw,39px);margin:0}
+  .cw-impact-card>p{grid-column:1;font-size:11px;min-height:0;max-width:190px}
+  .cw-impact-track{grid-column:1/-1;margin:8px 0 4px}
+  .cw-impact-foot{grid-column:1/-1;font-size:8px}
+  .home-page #story.cw-story-ready{padding:2rem 0!important;min-height:0!important;height:auto!important}
+  .cw-story-board{padding:17px 14px;border-radius:18px}
+  .cw-story-top{font-size:9px;flex-wrap:wrap;gap:6px}
+  .cw-story-board>h2{font-size:clamp(26px,7vw,34px);margin:10px 0 13px}
+  .cw-story-grid{gap:10px}
+  .cw-story-editorial{padding:17px;min-height:0;gap:8px}
+  .cw-story-editorial h3{font-size:23px;margin:8px 0 10px}
+  .cw-story-editorial p{font-size:12px;line-height:1.5}
+  .cw-story-editorial blockquote{font-size:11px}
+  .cw-story-blueprint{min-height:0;padding:14px 12px}
+  .cw-story-bp-head{font-size:9px}
+  .cw-story-flow{margin:10px 0}
+  .cw-story-node{min-height:91px;padding:8px 5px}
+  .cw-story-node small{font-size:8px}
+  .cw-story-node strong{font-size:10px}
+  .cw-story-blueprint p{font-size:10px}
+  .cw-founder{grid-template-columns:57px minmax(0,1fr);padding:10px;gap:10px}
+  .cw-founder img{height:57px;width:57px;border-radius:11px}
+  .cw-founder small{font-size:9px;letter-spacing:.05em}
+  .cw-founder h3{font-size:18px}
+  .cw-founder p{font-size:10px}
+  .cw-story-nav{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:10px}
+  .cw-story-nav button{padding:9px}
+  .cw-story-nav b{font-size:11px}
+  .cw-story-nav span{font-size:9px}
+  .cw-story-foot{font-size:8px;line-height:1.3}
 }

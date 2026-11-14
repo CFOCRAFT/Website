@@ -6176,3 +6176,35 @@
     font-size: 14px !important;
   }
 }
+/* WHY CFO CRAFT — responsive editorial blueprint and one-row swipeable tabs */
+@media(max-width:900px){
+  .why-bp-duo{grid-template-columns:1fr}
+  .why-bp-story{min-height:250px;padding:25px}
+  .why-bp-story-main h3{font-size:30px}
+  .why-bp-blueprint{min-height:255px;padding:22px}
+  .why-bp-rail{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:700px){
+  .why-blueprint-shell{margin-top:17px}
+  .why-bp-duo{border-radius:20px}
+  .why-bp-story{min-height:245px;padding:21px;gap:16px}
+  .why-bp-kicker{font-size:10px;letter-spacing:.09em}
+  .why-bp-story-main h3{font-size:clamp(24px,7vw,31px);margin-bottom:9px}
+  .why-bp-story-main p{font-size:13px;line-height:1.55}
+  .why-bp-story-foot{font-size:9px}
+  .why-bp-blueprint{min-height:230px;padding:17px 14px}
+  .why-bp-flow{grid-template-columns:minmax(0,1fr) 45px minmax(0,1fr);min-height:125px;gap:3px}
+  .why-bp-node{min-height:100px;gap:5px;padding:9px 5px}
+  .why-bp-node small{font-size:8px;letter-spacing:0}
+  .why-bp-node strong{font-size:10px;line-height:1.25}
+  .why-bp-arrow{width:42px;height:42px;font-size:19px;border-width:2px;box-shadow:0 0 0 7px #80c8ff23}
+  .why-bp-explainer{font-size:11px;padding-top:9px}
+  .why-bp-nav-head{margin:14px 1px 9px;font-size:9px}
+  .why-bp-nav-head span:last-child{display:none}
+  .why-bp-rail{display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:2px 1px 9px;overscroll-behavior-x:contain}
+  .why-bp-rail::-webkit-scrollbar{display:none}
+  .why-bp-tab{flex:0 0 auto;width:max-content;max-width:78%;min-height:55px;padding:9px 11px;gap:8px;border-radius:12px;scroll-snap-align:center}
+  .why-bp-tab-icon{width:30px;height:30px;border-radius:8px;font-size:17px}
+  .why-bp-tab-name{font-size:12px;white-space:nowrap}
+  .why-bp-tab-copy i{margin-top:4px;width:18px}
+}

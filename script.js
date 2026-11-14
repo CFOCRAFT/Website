@@ -5884,3 +5884,111 @@ if (document.readyState === "loading") {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mountMatrix, { once: true });
   else mountMatrix();
 })();
+
+/* WHY CFO CRAFT — editorial story + blueprint, compact mobile capability rail */
+(() => {
+  const mountWhyBlueprint = () => {
+    const root = document.querySelector('.section-why');
+    const grid = root?.querySelector('.why-grid');
+    if (!grid || root.classList.contains('why-blueprint-ready')) return;
+    const originals = [...grid.querySelectorAll('.why-card')];
+    if (originals.length !== 6) return;
+
+    const meta = [
+      ['Industry Experience', '⬡', 'EXPERIENCE', 'CLEARER JUDGMENT', 'Experienced financial leadership helps deliver practical, informed decisions.'],
+      ['Specialist Focus', '◎', 'FOCUSED EXPERTISE', 'RELEVANT ADVICE', 'Focused knowledge means recommendations fit the realities of a growing business.'],
+      ['Predictable Retainer', '✓', 'PREDICTABLE FEE', 'CONTINUOUS SUPPORT', 'A retainer creates clear cost expectations and supports an ongoing finance partnership.'],
+      ['Systems & Controls', '▤', 'DOCUMENTED SYSTEMS', 'RELIABLE OPERATIONS', 'Clear processes and controls make the finance function more dependable.'],
+      ['Real Ownership', '♧', 'ACCOUNTABILITY', 'FOLLOW-THROUGH', 'A hands-on partner remains accountable for decisions and their outcomes.'],
+      ['Independent Thinking', '✧', 'OUTSIDE PERSPECTIVE', 'HONEST INSIGHT', 'An objective view helps promoters see what internal teams may overlook.']
+    ];
+    const data = originals.map((card, i) => ({
+      title: card.querySelector('.why-title')?.textContent.trim() || meta[i][0],
+      description: card.querySelector('.why-desc')?.textContent.trim() || '',
+      label: meta[i][0], icon: meta[i][1], input: meta[i][2], output: meta[i][3], explanation: meta[i][4]
+    }));
+    const shell = document.createElement('div');
+    shell.className = 'why-blueprint-shell';
+    shell.innerHTML = `
+      <div class="why-bp-duo">
+        <article class="why-bp-story" aria-live="polite" aria-atomic="true">
+          <span class="why-bp-kicker">THE CFO CRAFT DIFFERENCE</span>
+          <div class="why-bp-story-main"><h3 data-why-title></h3><p data-why-description></p></div>
+          <span class="why-bp-story-foot">EXPERTISE · ACCOUNTABILITY · CLARITY</span>
+        </article>
+        <div class="why-bp-blueprint" aria-label="How CFO CRAFT creates business value">
+          <span class="why-bp-kicker">HOW WE CREATE BUSINESS VALUE</span>
+          <div class="why-bp-flow">
+            <div class="why-bp-node"><small>WHAT WE BRING</small><strong data-why-input></strong></div>
+            <span class="why-bp-arrow" aria-hidden="true">→</span>
+            <div class="why-bp-node"><small>WHAT IT ENABLES</small><strong data-why-output></strong></div>
+          </div>
+          <p class="why-bp-explainer"><strong>How it works:</strong> <span data-why-explanation></span></p>
+        </div>
+      </div>
+      <div class="why-bp-nav-head"><span>EXPLORE WHAT SETS US APART</span><span>CHOOSE A CAPABILITY</span></div>
+      <div class="why-bp-rail" role="group" aria-label="Choose a CFO CRAFT capability"></div>`;
+    const rail = shell.querySelector('.why-bp-rail');
+    data.forEach((item, i) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'why-bp-tab';
+      button.setAttribute('aria-pressed', 'false');
+      button.setAttribute('aria-label', item.label);
+      button.innerHTML = `<span class="why-bp-tab-icon" aria-hidden="true"></span><span class="why-bp-tab-copy"><span class="why-bp-tab-name"></span><i aria-hidden="true"></i></span>`;
+      button.querySelector('.why-bp-tab-icon').textContent = item.icon;
+      button.querySelector('.why-bp-tab-name').textContent = item.label;
+      rail.append(button);
+      button.addEventListener('click', () => {
+        holdUntil = Date.now() + 12000;
+        active = i;
+        render(true);
+        schedule();
+      });
+    });
+
+    grid.insertAdjacentElement('afterend', shell);
+    root.classList.add('why-blueprint-ready');
+    let active = 0;
+    let timer = null;
+    let holdUntil = 0;
+    let inView = true;
+    const mobile = window.matchMedia('(max-width: 700px)');
+    const render = (scrollTab = false) => {
+      const item = data[active];
+      shell.querySelector('[data-why-title]').textContent = item.title;
+      shell.querySelector('[data-why-description]').textContent = item.description;
+      shell.querySelector('[data-why-input]').textContent = item.input;
+      shell.querySelector('[data-why-output]').textContent = item.output;
+      shell.querySelector('[data-why-explanation]').textContent = item.explanation;
+      [...rail.children].forEach((button, index) => button.setAttribute('aria-pressed', String(index === active)));
+      if (mobile.matches && scrollTab) {
+        const button = rail.children[active];
+        const left = button.offsetLeft - (rail.clientWidth - button.offsetWidth) / 2;
+        rail.scrollTo({left, behavior: 'smooth'});
+      }
+    };
+    const schedule = () => {
+      clearTimeout(timer);
+      if (!inView || document.hidden) return;
+      const delay = Math.max(5000, holdUntil - Date.now());
+      timer = setTimeout(() => {
+        if (Date.now() < holdUntil) { schedule(); return; }
+        active = (active + 1) % data.length;
+        render(true);
+        schedule();
+      }, delay);
+    };
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(entries => {
+        inView = entries[0].isIntersecting;
+        schedule();
+      }, {threshold: 0.2}).observe(shell);
+    }
+    document.addEventListener('visibilitychange', schedule);
+    render();
+    schedule();
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mountWhyBlueprint, {once: true});
+  else mountWhyBlueprint();
+})();

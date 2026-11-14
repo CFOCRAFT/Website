@@ -5136,8 +5136,9 @@ if (document.readyState === "loading") {
     const motionPreference = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     );
+    const mobileLayout = () => window.innerWidth <= 768;
     const pinEnabled = () =>
-      !motionPreference.matches && window.innerWidth >= 300;
+      !motionPreference.matches && !mobileLayout();
     const navHeight = () => {
       const cssValue = parseFloat(
         getComputedStyle(document.body).getPropertyValue("--home-nav-offset"),
@@ -5189,8 +5190,8 @@ if (document.readyState === "loading") {
       panels.forEach((panel, i) => {
         const active = i === step;
         panel.classList.toggle("is-active", active);
-        panel.setAttribute("aria-hidden", String(pinEnabled() && !active));
-        panel.inert = pinEnabled() && !active;
+        panel.setAttribute("aria-hidden", String((pinEnabled() || mobileLayout()) && !active));
+        panel.inert = (pinEnabled() || mobileLayout()) && !active;
         // On an item change start the new copy from its top (short mobile screens).
         if (active && previous !== step) panel.scrollTop = 0;
       });
@@ -5243,6 +5244,15 @@ if (document.readyState === "loading") {
       nav = navHeight();
       document.body.style.setProperty("--home-nav-offset", `${nav}px`);
       for (const story of roots) {
+        if (mobileLayout()) {
+          // The phone has one natural-height card. Keep the active-slide
+          // classes, but remove pinned scroll distances and inner scrollers.
+          story.classList.add("story-enhanced", "story-mobile");
+          story.style.removeProperty("--cfo-story-height");
+          story.style.removeProperty("--cfo-step-distance");
+          continue;
+        }
+        story.classList.remove("story-mobile");
         if (!pinEnabled()) {
           story.classList.remove("story-enhanced");
           story.style.removeProperty("--cfo-story-height");
@@ -5292,6 +5302,7 @@ if (document.readyState === "loading") {
       }
     }
     function scrollToStep(story, step, behavior = "smooth") {
+      if (mobileLayout()) return; // Clicking a phone tab must never jump the page.
       if (!pinEnabled()) {
         story._cfoPanels[step]?.scrollIntoView({ behavior, block: "start" });
         return;
@@ -5316,6 +5327,12 @@ if (document.readyState === "loading") {
     for (const story of roots) {
       story._cfoPanels = [...story.querySelectorAll("[data-story-step]")];
       story._cfoButtons = [...story.querySelectorAll("[data-story-go]")];
+      story.addEventListener("touchstart", () => {
+        if (mobileLayout()) cancelPreview(story);
+      }, { passive: true });
+      story.addEventListener("touchend", () => {
+        if (mobileLayout()) schedulePreview(story, 12000);
+      }, { passive: true });
       story._cfoButtons.forEach((button) => {
         button.addEventListener("click", () => {
           const index = Math.max(

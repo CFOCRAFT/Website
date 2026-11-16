@@ -807,6 +807,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const canvas = viewport.querySelector("[data-dashboard-fit]");
       if (!canvas) return;
 
+      // Hero is now a native responsive dashboard on phones, not a
+      // scaled-down desktop canvas. Preserve canvas fitting for Monthly MIS.
+      if (canvas.classList.contains("hero-decision-desk")) {
+        viewport.style.height = "";
+        canvas.style.width = "";
+        canvas.style.maxWidth = "";
+        canvas.style.transform = "";
+        canvas.style.transformOrigin = "";
+        return;
+      }
+
       if (!shouldFit) {
         viewport.style.height = "";
         canvas.style.width = "";

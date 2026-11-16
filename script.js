@@ -1,3 +1,12 @@
+// A fresh home-page visit/reload must begin at the hero. Hash links still work.
+if (document.body?.classList.contains('home-page') && !location.hash) {
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  window.scrollTo(0, 0);
+  window.addEventListener('pageshow', event => {
+    if (!event.persisted && !location.hash) window.scrollTo(0, 0);
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   // ===== Navbar scroll effect =====
   const navbar = document.getElementById("navbar");
@@ -490,12 +499,16 @@ document.addEventListener("DOMContentLoaded", () => {
       if (counter)
         counter.textContent = `${String(value + 1).padStart(2, "0")} / ${String(panels.length).padStart(2, "0")}`;
       const step = steps[value];
-      if (step && !isDesktop())
-        step.scrollIntoView({
-          inline: "nearest",
-          block: "nearest",
-          behavior: "smooth",
-        });
+      if (step && !isDesktop()) {
+        // scrollIntoView also scrolls the whole page on load. Move only the
+        // horizontal tabs rail; never move the document vertically.
+        const rail = step.closest('.csx-steps');
+        if (rail && rail.scrollWidth > rail.clientWidth) {
+          const left = step.offsetLeft - rail.offsetLeft -
+            (rail.clientWidth - step.clientWidth) / 2;
+          rail.scrollTo({left: Math.max(0, left), behavior: 'smooth'});
+        }
+      }
     };
     const size = () => {
       // Preserve normal page scroll outside the story. 9 equal intervals, one pinned viewport.
@@ -807,9 +820,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const canvas = viewport.querySelector("[data-dashboard-fit]");
       if (!canvas) return;
 
-      // Hero is now a native responsive dashboard on phones, not a
-      // scaled-down desktop canvas. Preserve canvas fitting for Monthly MIS.
-      if (canvas.classList.contains("hero-decision-desk")) {
+      // Both home dashboards use native mobile layouts; don't shrink either
+      // to a desktop-sized canvas before their responsive CSS takes effect.
+      if (canvas.classList.contains("hero-decision-desk") ||
+          canvas.classList.contains("mock-dashboard-enhanced")) {
         viewport.style.height = "";
         canvas.style.width = "";
         canvas.style.maxWidth = "";
@@ -3275,6 +3289,7 @@ text{font-family:Inter,Arial,sans-serif}.t{font-weight:800;fill:#123654}.s{font-
     }
   });
 })();
+
 </script>
 
 </body>
@@ -5338,6 +5353,14 @@ if (document.readyState === "loading") {
     for (const story of roots) {
       story._cfoPanels = [...story.querySelectorAll("[data-story-step]")];
       story._cfoButtons = [...story.querySelectorAll("[data-story-go]")];
+      // Long slide copy has a hidden nested scrollbar. Forward wheel input to
+      // the document so the 4/6-step pinned story advances under the cursor.
+      story.addEventListener('wheel', event => {
+        if (!pinEnabled() || !event.target.closest('.feature-text') ||
+            event.ctrlKey || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+        event.preventDefault();
+        window.scrollBy({top: event.deltaY, left: 0, behavior: 'instant'});
+      }, {passive: false});
       story.addEventListener("touchstart", () => {
         if (mobileLayout()) cancelPreview(story);
       }, { passive: true });
@@ -6091,7 +6114,6 @@ if (document.readyState === "loading") {
     let holdUntil = 0;
     let visible = false;
     let autoTimer;
-    let scrollLock = false;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
     const pinnedStory = window.matchMedia('(min-width: 1100px) and (min-height: 760px)');
     const configurePinnedStory = () => story.classList.toggle('cw-story-pinned', pinnedStory.matches);
@@ -6209,4 +6231,77 @@ if (document.readyState === "loading") {
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => requestAnimationFrame(mount), {once:true});
   else requestAnimationFrame(mount);
+})();
+
+/* WHAT WE DO: actual JavaScript (outside embedded SVG/HTML templates). */
+(() => {
+  const init = () => {
+    const grid = document.querySelector('.section-platform .platform-features-grid');
+    if (!grid) return;
+    const cards = [...grid.querySelectorAll('.p-feature-card')];
+    if (cards.length !== 3) return;
+
+    let panel = grid.nextElementSibling;
+    if (!panel?.classList.contains('platform-mobile-detail')) {
+      panel = document.createElement('div');
+      panel.className = 'platform-mobile-detail';
+      panel.id = 'platform-mobile-detail';
+      panel.setAttribute('role', 'region');
+      panel.setAttribute('aria-live', 'polite');
+      panel.setAttribute('aria-label', 'Selected benefit details');
+      panel.append(document.createElement('h4'), document.createElement('p'));
+      grid.after(panel);
+    }
+
+    let activeIndex = 0;
+    let autoTimer = null;
+    const mobileQuery = matchMedia('(max-width: 768px)');
+    const select = index => {
+      activeIndex = index;
+      cards.forEach((card, i) => {
+        card.classList.toggle('platform-mobile-active', i === index);
+        card.setAttribute('aria-expanded', String(i === index));
+      });
+      panel.querySelector('h4').textContent = cards[index].querySelector('h4')?.textContent?.trim() || '';
+      panel.querySelector('p').textContent = cards[index].querySelector('p')?.textContent?.trim() || '';
+    };
+
+    // Rotate every 5 seconds; a manual tap gets 12 seconds to read.
+    const scheduleNext = (delay = 5000) => {
+      clearTimeout(autoTimer);
+      if (!mobileQuery.matches || document.hidden || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      autoTimer = setTimeout(() => {
+        select((activeIndex + 1) % cards.length);
+        scheduleNext(5000);
+      }, delay);
+    };
+    const manualSelect = index => {
+      select(index);
+      scheduleNext(12000);
+    };
+
+    cards.forEach((card, index) => {
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('role', 'button');
+      card.setAttribute('aria-controls', panel.id);
+      card.addEventListener('click', () => {
+        if (mobileQuery.matches) manualSelect(index);
+      });
+      card.addEventListener('keydown', e => {
+        if (mobileQuery.matches && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          manualSelect(index);
+        }
+      });
+    });
+    select(0);
+    scheduleNext();
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) clearTimeout(autoTimer);
+      else scheduleNext();
+    });
+    mobileQuery.addEventListener?.('change', () => scheduleNext());
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, {once:true});
+  else init();
 })();

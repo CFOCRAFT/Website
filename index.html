@@ -1026,8 +1026,16 @@
                     </article>
                   </div>
 
+                  <div class="decision-mobile-kpi-nav" aria-label="Financial metric navigation">
+                    <span class="decision-mobile-kpi-dots" aria-hidden="true"><i class="is-active"></i><i></i><i></i></span>
+                    <span>Swipe to view KPIs <span aria-hidden="true">→</span></span>
+                  </div>
+                  <div class="decision-mobile-chart-tabs" role="tablist" aria-label="Financial dashboard charts">
+                    <button class="is-active" type="button" role="tab" id="decisionPerformanceTab" aria-selected="true" aria-controls="decisionPerformancePanel">Performance</button>
+                    <button type="button" role="tab" id="decisionCapitalTab" aria-selected="false" aria-controls="decisionCapitalPanel">Working Capital</button>
+                  </div>
                   <div class="decision-middle-grid">
-                    <article class="decision-panel revenue-panel">
+                    <article class="decision-panel revenue-panel is-active" id="decisionPerformancePanel" role="tabpanel" aria-labelledby="decisionPerformanceTab">
                       <div class="decision-panel-head">
                         <div>
                           <span class="decision-panel-label">Performance</span>
@@ -1069,7 +1077,7 @@
                       </div>
                     </article>
 
-                    <article class="decision-panel cash-panel">
+                    <article class="decision-panel cash-panel" id="decisionCapitalPanel" role="tabpanel" aria-labelledby="decisionCapitalTab">
                       <div class="decision-panel-head">
                         <div>
                           <span class="decision-panel-label"
@@ -2395,7 +2403,7 @@
                 with a prioritised action plan. No lock-in.
               </p>
               <div class="home-bookend-price">
-                <p class="home-plan-price">₹50,000</p>
+                <p class="home-plan-price">Fixed</p>
                 <p class="home-plan-unit">one-time</p>
                 <a href="./services/finance-diagnostic.html">
                   Full details &rarr;

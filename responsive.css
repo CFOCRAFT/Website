@@ -6260,3 +6260,96 @@
   .cw-story-nav span{font-size:9px}
   .cw-story-foot{font-size:8px;line-height:1.3}
 }
+
+/* CFO CRAFT — Option 01: native readable dashboard on iOS / Android.
+   Overrides the older 1100px scaled screenshot treatment on phones only. */
+@media (max-width: 768px) {
+  .home-page .hero-dashboard { width:100%!important;max-width:100%!important;min-width:0!important;overflow:visible!important;margin:1.25rem auto 0!important; }
+  .home-page .hero-advisory-shell {
+    display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+    width:100%!important;min-width:0!important;max-width:100%!important;
+    min-height:0!important;height:auto!important;zoom:1!important;
+    overflow:hidden!important;border-radius:19px!important;
+  }
+  .home-page .hero-advisory-copy {
+    width:100%!important;min-width:0!important;max-width:100%!important;
+    padding:clamp(18px,5vw,28px)!important;justify-content:flex-start!important;
+    border-right:0!important;border-bottom:1px solid #dbe6f0!important;
+  }
+  .home-page .hero-advisory-eyebrow {font-size:11px!important;margin-bottom:9px!important}
+  .home-page .hero-advisory-title {font-size:clamp(25px,7vw,34px)!important;line-height:1.16!important;margin:0 0 12px!important;letter-spacing:-.035em!important}
+  .home-page .hero-advisory-text {font-size:clamp(13px,3.6vw,15px)!important;line-height:1.55!important;margin:0 0 16px!important}
+  .home-page .hero-advisory-actions {display:flex!important;flex-direction:row!important;flex-wrap:wrap!important;gap:9px!important;align-items:center!important}
+  .home-page .hero-advisory-actions .btn-discovery,.home-page .hero-advisory-actions .link-diagnostic {font-size:12px!important;padding:10px 13px!important;min-height:43px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important}
+  .home-page .hero-value-strip {display:none!important}
+  .home-page .hero-decision-viewport.dashboard-fit-viewport {
+    display:block!important;width:100%!important;min-width:0!important;max-width:100%!important;
+    height:auto!important;overflow:visible!important;align-self:auto!important;
+  }
+  .home-page .hero-decision-desk.dashboard-fit-canvas {
+    display:block!important;width:100%!important;min-width:0!important;max-width:100%!important;
+    height:auto!important;min-height:0!important;zoom:1!important;transform:none!important;
+    padding:clamp(15px,4vw,23px)!important;flex:none!important;
+  }
+  .home-page .decision-desk-header {flex-direction:row!important;gap:7px!important;margin:0 0 15px!important;align-items:flex-start!important}
+  .home-page .decision-desk-eyebrow {font-size:10px!important;line-height:1.3!important;letter-spacing:.1em!important}
+  .home-page .decision-desk-header h3 {font-size:clamp(19px,5.3vw,24px)!important;line-height:1.2!important;margin:6px 0 0!important}
+  .home-page .decision-desk-status {font-size:9px!important;padding:6px 7px!important;gap:5px!important;white-space:nowrap!important}
+  .home-page .decision-kpi-grid {
+    display:flex!important;grid-template-columns:none!important;gap:10px!important;
+    width:100%!important;margin:0!important;padding:2px 1px 9px!important;
+    overflow-x:auto!important;overflow-y:hidden!important;
+    scroll-snap-type:x mandatory!important;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+    overscroll-behavior-x:contain;
+  }
+  .home-page .decision-kpi-grid::-webkit-scrollbar{display:none}
+  .home-page .decision-kpi-card {
+    flex:0 0 78%!important;min-width:0!important;max-width:none!important;
+    min-height:145px!important;padding:19px 17px!important;border-radius:16px!important;
+    scroll-snap-align:center;scroll-snap-stop:always;
+  }
+  .home-page .decision-kpi-label {font-size:14px!important;line-height:1.35!important;min-height:0!important;margin:0 0 13px!important}
+  .home-page .decision-kpi-card strong {font-size:clamp(25px,7vw,32px)!important;line-height:1.15!important;margin:0 0 9px!important}
+  .home-page .decision-kpi-meta {font-size:12px!important;line-height:1.4!important}
+  .home-page .decision-mobile-kpi-nav {display:flex!important;justify-content:space-between;gap:10px;align-items:center;margin:2px 1px 16px;color:#5a82a0;font-size:11px;font-weight:700}
+  .home-page .decision-mobile-kpi-dots {display:flex;gap:6px;align-items:center}
+  .home-page .decision-mobile-kpi-dots i {display:block;width:7px;height:7px;background:#cbddec;border-radius:8px;transition:width .2s,background .2s}
+  .home-page .decision-mobile-kpi-dots i.is-active {width:23px;background:#2d79bb}
+  .home-page .decision-mobile-chart-tabs {display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:5px;margin:0 0 13px;background:#e9f2fb;border-radius:12px}
+  .home-page .decision-mobile-chart-tabs button {border:0;border-radius:9px;padding:11px 7px;font-family:inherit;font-size:12px;font-weight:800;background:transparent;color:#587f9e;cursor:pointer;min-height:42px}
+  .home-page .decision-mobile-chart-tabs button.is-active {background:#fff;color:#0a2a51;box-shadow:0 2px 8px #08295117}
+  .home-page .decision-mobile-chart-tabs button:focus-visible {outline:3px solid #efb97d;outline-offset:1px}
+  .home-page .decision-middle-grid {display:block!important;grid-template-columns:none!important;width:100%!important;margin:0 0 13px!important}
+  .home-page .decision-middle-grid > .decision-panel {display:none!important;padding:17px 15px!important;border-radius:16px!important;min-height:234px!important}
+  .home-page .decision-middle-grid > .decision-panel.is-active {display:block!important}
+  .home-page .decision-panel-label {font-size:10px!important;letter-spacing:.12em!important}
+  .home-page .decision-panel-head h4 {font-size:18px!important;line-height:1.3!important}
+  .home-page .decision-period,.home-page .decision-chart-legend {font-size:12px!important}
+  .home-page .decision-chart {height:130px!important;gap:9px!important}
+  .home-page .decision-chart .decision-bar {width:clamp(8px,3vw,13px)!important}
+  .home-page .cash-driver-list {gap:15px!important;margin-top:23px!important}
+  .home-page .cash-driver-row {grid-template-columns:minmax(83px,1fr) minmax(45px,1.65fr) 34px!important;gap:9px!important;font-size:12px!important;align-items:center!important}
+  .home-page .cash-driver-row strong {font-size:12px!important}
+  .home-page .cfo-priority-card {padding:16px!important;border-radius:15px!important;margin:0!important}
+  .home-page .cfo-priority-topline {flex-direction:row!important;align-items:center!important;gap:7px!important}
+  .home-page .cfo-priority-topline span {font-size:11px!important}
+  .home-page .cfo-priority-card h4 {font-size:17px!important;line-height:1.3!important}
+  .home-page .cfo-priority-card p {font-size:12px!important;line-height:1.5!important}
+  .home-page .decision-disclaimer {font-size:10px!important;line-height:1.4!important;margin:10px 0 0!important}
+}
+@media (max-width: 350px) {
+  .home-page .decision-desk-status {font-size:8px!important;padding:5px!important}
+  .home-page .decision-desk-header h3 {font-size:18px!important}
+  .home-page .decision-kpi-card {flex-basis:86%!important}
+  .home-page .cash-driver-row {grid-template-columns:83px minmax(40px,1fr) 30px!important;gap:5px!important}
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-page .decision-mobile-kpi-dots i {transition:none!important}
+}
+
+/* New controls stay invisible in the original desktop dashboard. */
+@media (min-width:769px) {
+  .home-page .decision-mobile-kpi-nav,
+  .home-page .decision-mobile-chart-tabs {display:none!important}
+}
+

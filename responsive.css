@@ -6661,3 +6661,35 @@
   .home-page #why .why-bp-rail:has(.why-bp-tab:nth-child(5)[aria-pressed="true"])::after { content:'Real Ownership'; }
   .home-page #why .why-bp-rail:has(.why-bp-tab:nth-child(6)[aria-pressed="true"])::after { content:'Independent Thinking'; }
 }
+/* Our Story: mobile-only reading order — founder, chapter, blueprint, tabs. */
+@media (max-width: 768px) {
+  .home-page #story.cw-story-ready .cw-story-board {
+    display: flex;
+    flex-direction: column;
+  }
+  .home-page #story.cw-story-ready .cw-story-grid,
+  .home-page #story.cw-story-ready .cw-story-right {
+    display: contents;
+  }
+  .home-page #story.cw-story-ready .cw-story-top { order: 0; }
+  .home-page #story.cw-story-ready .cw-story-board > h2 { order: 1; }
+  .home-page #story.cw-story-ready .cw-founder {
+    order: 2;
+    width: 100%;
+    margin: 0 0 10px;
+  }
+  .home-page #story.cw-story-ready .cw-story-editorial {
+    order: 3;
+    width: 100%;
+    margin: 0 0 10px;
+  }
+  .home-page #story.cw-story-ready .cw-story-blueprint {
+    order: 4;
+    width: 100%;
+  }
+  .home-page #story.cw-story-ready .cw-story-nav {
+    order: 5;
+    width: 100%;
+  }
+  .home-page #story.cw-story-ready .cw-story-foot { order: 6; }
+}

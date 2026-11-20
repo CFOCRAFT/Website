@@ -5213,7 +5213,10 @@ if (document.readyState === "loading") {
       const padding = parseFloat(firstStyle.paddingLeft) || 0;
       const markerWidth = parseFloat(markerStyle.width) || 40;
       const border = parseFloat(firstStyle.borderLeftWidth) || 0;
-      const axis = firstRect.left - railRect.left + border + padding + markerWidth / 2;
+      const dotOffset = parseFloat(getComputedStyle(first, "::after").left);
+      const axis = !mobileLayout() && Number.isFinite(dotOffset)
+        ? firstRect.left - railRect.left + dotOffset
+        : firstRect.left - railRect.left + border + padding + markerWidth / 2;
       const start = firstRect.top - railRect.top + firstRect.height / 2;
       const length = Math.max(0, lastRect.top + lastRect.height / 2 -
         firstRect.top - firstRect.height / 2);
@@ -5414,11 +5417,31 @@ if (document.readyState === "loading") {
     for (const story of roots) {
       story._cfoPanels = [...story.querySelectorAll("[data-story-step]")];
       story._cfoButtons = [...story.querySelectorAll("[data-story-go]")];
+      story._cfoButtons.forEach((button) => {
+        if (!button.querySelector(".cfo-story-chevron")) {
+          const chevron = document.createElement("span");
+          chevron.className = "cfo-story-chevron";
+          chevron.textContent = "→";
+          chevron.setAttribute("aria-hidden", "true");
+          button.appendChild(chevron);
+        }
+      });
       // Long slide copy has a hidden nested scrollbar. Forward wheel input to
       // the document so the 4/6-step pinned story advances under the cursor.
       story.addEventListener('wheel', event => {
-        if (!pinEnabled() || !event.target.closest('.feature-text') ||
+        const copy = event.target.closest('.feature-text');
+        if (!pinEnabled() || !copy ||
             event.ctrlKey || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+        // The six Services slides can contain more text than a pinned screen.
+        // Let their own copy pane scroll until its end, then continue the
+        // normal page/slide scroll when the reader reaches that boundary.
+        if (story.id === 'services') {
+          const remaining = copy.scrollHeight - copy.clientHeight;
+          const canScroll = event.deltaY > 0
+            ? copy.scrollTop < remaining - 1
+            : copy.scrollTop > 1;
+          if (canScroll) return;
+        }
         event.preventDefault();
         window.scrollBy({top: event.deltaY, left: 0, behavior: 'instant'});
       }, {passive: false});

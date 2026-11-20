@@ -5186,6 +5186,47 @@ if (document.readyState === "loading") {
     // Automatic changes don't move the browser's scroll position.
     const autoTimers = new Map();
     const visibleStories = new Set();
+    // Align the track exactly through the numbered-circle centres.
+    // Coordinates are relative to the rail, so they remain stable when the
+    // phone's vertical list scrolls independently of the page.
+    function measureStoryRail(story) {
+      const rail = story.querySelector(".cfo-story-progress");
+      const buttons = story._cfoButtons || [];
+      if (!rail || buttons.length < 2) return;
+      let line = rail.querySelector(".cfo-story-rail");
+      if (!line) {
+        line = document.createElement("span");
+        line.className = "cfo-story-rail";
+        line.setAttribute("aria-hidden", "true");
+        const fill = document.createElement("span");
+        fill.className = "cfo-story-rail-fill";
+        line.appendChild(fill);
+        rail.prepend(line);
+      }
+      const first = buttons[0];
+      const last = buttons[buttons.length - 1];
+      const railRect = rail.getBoundingClientRect();
+      const firstRect = first.getBoundingClientRect();
+      const lastRect = last.getBoundingClientRect();
+      const firstStyle = getComputedStyle(first);
+      const markerStyle = getComputedStyle(first, "::before");
+      const padding = parseFloat(firstStyle.paddingLeft) || 0;
+      const markerWidth = parseFloat(markerStyle.width) || 40;
+      const border = parseFloat(firstStyle.borderLeftWidth) || 0;
+      const axis = firstRect.left - railRect.left + border + padding + markerWidth / 2;
+      const start = firstRect.top - railRect.top + firstRect.height / 2;
+      const length = Math.max(0, lastRect.top + lastRect.height / 2 -
+        firstRect.top - firstRect.height / 2);
+      line.style.left = `${axis - 1}px`;
+      line.style.top = `${start}px`;
+      line.style.height = `${length}px`;
+    }
+    function setRailProgress(story, progress) {
+      const rail = story.querySelector(".cfo-story-progress");
+      if (!rail) return;
+      const value = Math.max(0, Math.min(1, progress));
+      rail.style.setProperty("--cfo-rail-progress", `${(value * 100).toFixed(2)}%`);
+    }
     const cancelPreview = (story) => {
       window.clearTimeout(autoTimers.get(story));
       autoTimers.delete(story);
@@ -5227,6 +5268,20 @@ if (document.readyState === "loading") {
         button.setAttribute("aria-pressed", String(i === step));
         button.setAttribute("aria-current", i === step ? "step" : "false");
       });
+      setRailProgress(story, step / Math.max(1, panels.length - 1));
+      // Keep the selected chapter visible inside the phone's vertical rail.
+      // Scroll only this small navigation list, never the whole document.
+      if (mobileLayout() && previous !== step && buttons[step]) {
+        const rail = story.querySelector(".cfo-story-nav");
+        const selected = buttons[step];
+        if (rail && rail.scrollHeight > rail.clientHeight) {
+          const railRect = rail.getBoundingClientRect();
+          const selectedRect = selected.getBoundingClientRect();
+          const target = rail.scrollTop + selectedRect.top - railRect.top -
+            (rail.clientHeight - selectedRect.height) / 2;
+          rail.scrollTo({ top: target, behavior: motionPreference.matches ? "instant" : "smooth" });
+        }
+      }
       const progress = story.querySelector("[data-story-current]");
       if (progress) {
         const name =
@@ -5276,6 +5331,7 @@ if (document.readyState === "loading") {
           story.classList.add("story-enhanced", "story-mobile");
           story.style.removeProperty("--cfo-story-height");
           story.style.removeProperty("--cfo-step-distance");
+          measureStoryRail(story);
           continue;
         }
         story.classList.remove("story-mobile");
@@ -5302,6 +5358,7 @@ if (document.readyState === "loading") {
         );
         story.style.setProperty("--cfo-step-distance", `${stepDistance}px`);
         story.classList.add("story-enhanced");
+        measureStoryRail(story);
       }
     }
 
@@ -5319,6 +5376,10 @@ if (document.readyState === "loading") {
           Math.floor(position / stepDistance + 1e-6),
         );
         setStep(story, step);
+        // Unlike discrete tab highlights, the blue line advances continuously
+        // with scroll distance, matching the Case Studies progress rail.
+        setRailProgress(story,
+          (position / stepDistance) / Math.max(1, story._cfoPanels.length - 1));
       }
     }
     function scheduleScroll() {
@@ -5388,6 +5449,8 @@ if (document.readyState === "loading") {
     }
     measure();
     for (const story of roots) setStep(story, 0, true);
+    // Re-measure once fonts and the final grid have had a paint opportunity.
+    requestAnimationFrame(() => roots.forEach(measureStoryRail));
     selectFromScroll();
     if ("IntersectionObserver" in window) {
       const previews = new Map(roots.map((story) => [story.querySelector(".cfo-story-pin") || story, story]));

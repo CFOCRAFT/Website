@@ -930,3 +930,23 @@ body.resource-page.case-studies-page .case-status {
 .resource-page .ask-actions a.resource-btn:focus-visible,
 .resource-page .ev > a.resource-btn:focus-visible,
 .resource-page #form button.resource-btn:focus-visible {outline: 3px solid #2b6db2;outline-offset: 3px;}
+
+
+/* Resources Hub / Events / Case Studies: desktop hero spans the content width.
+   Six Free Tools pages do not load this stylesheet. */
+@media (min-width: 1100px) {
+  body.resource-page .resource-hero .resource-hero-copy {
+    width: 100%;
+    max-width: none !important;
+  }
+  body.resource-page .resource-hero h1 {
+    max-width: none;
+    font-size: clamp(2.05rem, 2.55vw, 2.75rem);
+    text-wrap: wrap;
+  }
+  body.resource-page .resource-hero .resource-lede {
+    max-width: none;
+    font-size: clamp(.98rem, 1.04vw, 1.1rem);
+    text-wrap: wrap;
+  }
+}

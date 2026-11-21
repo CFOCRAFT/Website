@@ -1454,3 +1454,23 @@ body.about-page {
   }
   .about-page[data-page="team"] .about-founder-details .about-facts dd { line-height: 1.45; }
 }
+
+
+/* Desktop hero: occupy the available horizontal space instead of a 730px text column.
+   Tablet/mobile keep their original natural wrapping. */
+@media (min-width: 1100px) {
+  body.about-page .about-hero .about-hero-copy {
+    width: 100%;
+    max-width: none;
+  }
+  body.about-page .about-hero h1 {
+    max-width: none;
+    font-size: clamp(2.05rem, 2.55vw, 2.75rem);
+    text-wrap: wrap;
+  }
+  body.about-page .about-hero .about-lede {
+    max-width: none;
+    font-size: clamp(.98rem, 1.04vw, 1.1rem);
+    text-wrap: wrap;
+  }
+}

@@ -93,3 +93,15 @@
     gap: clamp(2rem, 15vw, 5rem);
   }
 }
+
+
+/* Override Case Studies' older 920px hero limit on desktop only. */
+@media (min-width: 1100px) {
+  body.case-studies-page .case3d-hero .resource-hero-copy { max-width: none !important; }
+  body.case-studies-page .case3d-hero h1 {
+    max-width: none;
+    font-size: clamp(2.05rem, 2.55vw, 2.75rem);
+    text-wrap: wrap;
+  }
+  body.case-studies-page .case3d-hero .resource-lede { max-width: none; }
+}

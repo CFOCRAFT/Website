@@ -1383,3 +1383,74 @@ body.about-page {
     margin-top: 12px;
   }
 }
+
+
+/* Team founder: compact desktop profile, approved portrait dimensions retained. */
+.about-page[data-page="team"] .about-founder-link-desktop { display: none; }
+@media (min-width: 961px) {
+  .about-page[data-page="team"] .about-founder {
+    --founder-portrait-width: 193.8px;
+    grid-template-columns: minmax(0, var(--founder-portrait-width)) minmax(0, 1fr);
+    column-gap: clamp(1.75rem, 3vw, 3rem);
+    row-gap: 1.35rem;
+    align-items: start;
+  }
+  .about-page[data-page="team"] .about-founder > .about-photo {
+    align-self: start;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .85rem;
+  }
+  .about-page[data-page="team"] .about-founder > .about-photo .about-photo-frame {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 25 / 26;
+    margin: 0;
+  }
+  .about-page[data-page="team"] .about-founder > .about-bio > p:not(.about-role-label):not(.about-credentials) {
+    max-width: none;
+    line-height: 1.6;
+    margin-bottom: .85rem;
+  }
+  .about-page[data-page="team"] .about-founder > .about-bio > p:last-child { margin-bottom: 0; }
+  .about-page[data-page="team"] .about-founder .about-credentials { margin-bottom: 1rem; }
+  .about-page[data-page="team"] .about-founder-link-desktop {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: .65rem .4rem;
+    border: 1px solid rgba(43,109,178,.18);
+    border-radius: 999px;
+    background: #f1f7fd;
+    font-size: .82rem;
+    text-align: center;
+    text-decoration: none;
+  }
+  .about-page[data-page="team"] .about-founder-link-desktop:hover { background: #e3effc; }
+  .about-page[data-page="team"] .about-founder-link-mobile { display: none; }
+  .about-page[data-page="team"] .about-founder-details .about-facts {
+    display: grid;
+    grid-template-columns: 1fr 1fr .65fr;
+    margin: 0;
+  }
+  .about-page[data-page="team"] .about-founder-details .about-facts > div {
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+    padding: .9rem 1.15rem;
+    border-bottom: 0;
+    min-width: 0;
+  }
+  .about-page[data-page="team"] .about-founder-details .about-facts > div + div { border-left: 1px solid var(--gray-200); }
+  .about-page[data-page="team"] .about-founder-details .about-facts dt {
+    font-size: .76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .045em;
+    color: var(--primary-blue);
+  }
+  .about-page[data-page="team"] .about-founder-details .about-facts dd { line-height: 1.45; }
+}
